@@ -11,7 +11,6 @@ export default function Cursor() {
   const cursorY = useSpring(0, { stiffness: 500, damping: 28 });
   const cursorRingX = useSpring(0, { stiffness: 250, damping: 20 });
   const cursorRingY = useSpring(0, { stiffness: 250, damping: 20 });
-  const [velocity, setVelocity] = useState({ x: 0, y: 0 });
 
   const lastPos = useRef({ x: 0, y: 0 });
 
@@ -20,9 +19,6 @@ export default function Cursor() {
     const moveCursor = (e: MouseEvent) => {
       if (!isVisible) setIsVisible(true);
       
-      const vX = e.clientX - lastPos.current.x;
-      const vY = e.clientY - lastPos.current.y;
-      setVelocity({ x: vX, y: vY });
       lastPos.current = { x: e.clientX, y: e.clientY };
 
       // Check if hovering over magnetic elements
@@ -71,8 +67,7 @@ export default function Cursor() {
 
   if (!isMounted) return null;
 
-  // Calculate stretch based on velocity for the ring
-  const stretch = Math.min(Math.abs(velocity.x) + Math.abs(velocity.y), 100) / 100;
+
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[100] hidden md:block">
@@ -96,13 +91,11 @@ export default function Cursor() {
           opacity: isVisible ? 1 : 0,
           scale: isHovering ? 1.5 : 1,
           boxShadow: "0 0 10px 0 rgba(0, 217, 255, 0.2), inset 0 0 10px 0 rgba(0, 217, 255, 0.2)",
-        }}
-        animate={{
-          scaleX: 1 + stretch * 0.2,
-          scaleY: 1 - stretch * 0.1,
+          willChange: "transform",
         }}
         transition={{ type: "spring", stiffness: 400, damping: 28 }}
       />
+
     </div>
   );
 }

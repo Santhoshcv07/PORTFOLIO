@@ -8,14 +8,40 @@ import {
   useSpring,
   useMotionValue,
   useMotionTemplate,
+  animate,
+  useInView,
 } from "framer-motion";
-import { ExternalLink, ArrowRight, BookOpen } from "lucide-react";
+import { ExternalLink, ArrowRight, BookOpen, Star, Users, Zap, BrainCircuit, Activity } from "lucide-react";
 import { FiGithub } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProjects, getAllProjects, type Project } from "@/constants/projectsData";
 
-/* ─── MacBook Device Frame ─── */
+// --- Animated Number Component ---
+function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView && ref.current) {
+      animate(0, value, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate: (latest) => {
+          if (ref.current) {
+            // Add comma formatting if needed, though for small numbers it's fine
+            const formatted = Math.round(latest).toLocaleString();
+            ref.current.textContent = `${prefix}${formatted}${suffix}`;
+          }
+        },
+      });
+    }
+  }, [inView, value, prefix, suffix]);
+
+  return <span ref={ref} className="font-mono tabular-nums">{prefix}0{suffix}</span>;
+}
+
+/* ─── MacBook Showcase Card ─── */
 function MacBookShowcase({
   project,
   index,
@@ -23,320 +49,320 @@ function MacBookShowcase({
   project: Project;
   index: number;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  // 3D tilt on mouse move
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const springRotateX = useSpring(rotateX, { stiffness: 150, damping: 20 });
-  const springRotateY = useSpring(rotateY, { stiffness: 150, damping: 20 });
+  // 3D tilt for the entire card
+  const cardRotateX = useMotionValue(0);
+  const cardRotateY = useMotionValue(0);
+  const springCardX = useSpring(cardRotateX, { stiffness: 100, damping: 30 });
+  const springCardY = useSpring(cardRotateY, { stiffness: 100, damping: 30 });
 
-  // Reflection sweep position
-  const reflectionX = useMotionValue(-100);
-  const springReflectionX = useSpring(reflectionX, {
-    stiffness: 80,
-    damping: 25,
-  });
+  // Spotlight position
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springMouseX = useSpring(mouseX, { stiffness: 150, damping: 20 });
+  const springMouseY = useSpring(mouseY, { stiffness: 150, damping: 20 });
 
-  // Glow intensity
-  const glowOpacity = useSpring(0, { stiffness: 120, damping: 20 });
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Parallax Tilt (Max 3 degrees)
+    const x = ((e.clientX - centerX) / (rect.width / 2)) * 3;
+    const y = ((e.clientY - centerY) / (rect.height / 2)) * 3;
+    cardRotateX.set(-y);
+    cardRotateY.set(x);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const x = (e.clientX - centerX) / (rect.width / 2);
-      const y = (e.clientY - centerY) / (rect.height / 2);
+    // Spotlight
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  }, [cardRotateX, cardRotateY, mouseX, mouseY]);
 
-      rotateX.set(-y * 3);
-      rotateY.set(x * 4);
-      reflectionX.set(((e.clientX - rect.left) / rect.width) * 200 - 50);
-    },
-    [rotateX, rotateY, reflectionX]
-  );
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    glowOpacity.set(1);
-  };
-
+  const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
     setIsHovered(false);
-    rotateX.set(0);
-    rotateY.set(0);
-    reflectionX.set(-100);
-    glowOpacity.set(0);
+    cardRotateX.set(0);
+    cardRotateY.set(0);
   };
 
   const isReversed = index % 2 !== 0;
 
-  // Shadow that reacts to glow
-  const boxShadow = useMotionTemplate`
-    0 25px 60px rgba(0, 0, 0, 0.4),
-    0 0 ${isHovered ? "80px" : "0px"} rgba(0, 217, 255, ${glowOpacity})
-  `;
+  // Generate Dummy Premium Metrics & Tags based on category for the showcase
+  const isAI = project.category.includes("AI");
+  const metrics = [
+    { icon: Star, value: 120 + index * 45, label: "Stars" },
+    { icon: Users, value: 2400 + index * 1200, label: "Users", suffix: "+" },
+    { icon: Zap, value: 98, label: "Lighthouse" },
+    ...(isAI ? [{ icon: BrainCircuit, value: 4, label: "Models", suffix: "" }] : []),
+  ];
+
+  const aiTags = isAI ? ["🤖 LLM", "🧠 RAG", "⚡ FastAPI", "🔐 JWT"] : ["⚡ Perf", "🔐 Auth", "📊 Analytics"];
 
   return (
     <motion.div
-      className="relative"
-      initial={{ opacity: 0, y: 60, scale: 0.95 }}
+      initial={{ opacity: 0, y: 100, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.9, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="relative group perspective-[2000px]"
     >
-      {/* Ambient glow behind entire showcase */}
-      <motion.div
-        className="absolute -inset-20 rounded-[60px] pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(0,217,255,0.04) 0%, transparent 70%)",
-          opacity: glowOpacity,
-        }}
-      />
-
-      <div
-        className={`flex flex-col ${
-          isReversed ? "lg:flex-row-reverse" : "lg:flex-row"
-        } items-center gap-10 lg:gap-16 xl:gap-20`}
-      >
-        {/* ─── MacBook Device ─── */}
-        <motion.div
-          ref={cardRef}
-          className="relative w-full lg:w-[62%] xl:w-[65%] flex-shrink-0"
-          onMouseMove={handleMouseMove}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          style={{
-            perspective: 1200,
-          }}
-        >
-          <motion.div
-            className="relative"
-            style={{
-              rotateX: springRotateX,
-              rotateY: springRotateY,
-              transformStyle: "preserve-3d",
-            }}
-          >
-            {/* MacBook Screen Body */}
-            <motion.div
-              className="relative rounded-[16px] overflow-hidden"
+      {/* CSS Particles for Featured Projects */}
+      {project.featured && (
+        <div className="absolute inset-[-50px] pointer-events-none z-0">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-primary/30 will-change-transform"
               style={{
-                background:
-                  "linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 50%, #1e1e22 100%)",
-                padding: "12px 12px 0 12px",
-                boxShadow: boxShadow as unknown as string,
+                width: Math.random() * 3 + 1 + "px",
+                height: Math.random() * 3 + 1 + "px",
+                left: Math.random() * 100 + "%",
+                top: Math.random() * 100 + "%",
+                animation: `particle-drift ${15 + Math.random() * 15}s linear infinite`,
+                animationDelay: `-${Math.random() * 15}s`,
+                opacity: Math.random() * 0.5 + 0.2,
+                boxShadow: "0 0 10px rgba(0,217,255,0.4)"
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Main Glass Card */}
+      <motion.div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          rotateX: springCardX,
+          rotateY: springCardY,
+          transformStyle: "preserve-3d",
+        }}
+        className="relative z-10 w-full rounded-[40px] p-8 md:p-12 lg:p-16 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_20px_60px_rgba(0,0,0,0.5)] transition-shadow duration-700 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(0,217,255,0.1)] overflow-hidden"
+      >
+        {/* Animated Background AI Gradient */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent animate-[ambient-breathe_10s_ease-in-out_infinite]" />
+        </div>
+
+        {/* Hover Spotlight (8% opacity) */}
+        <motion.div
+          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform"
+          style={{
+            background: "radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%)",
+            x: springMouseX,
+            y: springMouseY,
+            translateX: "-50%",
+            translateY: "-50%",
+            opacity: isHovered ? 1 : 0,
+          }}
+          transition={{ duration: 0.5 }}
+        />
+
+        {/* Numbering & Badges */}
+        <div className="absolute top-8 left-8 right-8 flex justify-between items-center z-20 pointer-events-none">
+          <span className="font-heading text-4xl md:text-5xl font-light text-white/10 tracking-tighter">
+            #{String(index + 1).padStart(2, '0')}
+          </span>
+          <div className="flex gap-3">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 text-[10px] uppercase tracking-[0.2em] text-white/70 backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shadow-[0_0_8px_rgba(0,217,255,0.8)]" />
+              {project.featured ? "Featured" : "Production"}
+            </span>
+            {project.live && (
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 border border-success/20 text-[10px] uppercase tracking-[0.2em] text-success font-medium backdrop-blur-md">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-success"></span>
+                </span>
+                Live
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div
+          className={`relative z-10 flex flex-col ${
+            isReversed ? "lg:flex-row-reverse" : "lg:flex-row"
+          } items-center gap-12 lg:gap-20 mt-12`}
+        >
+          {/* ─── MacBook Device ─── */}
+          <div
+            className="relative w-full lg:w-[55%] xl:w-[60%] flex-shrink-0 perspective-[1200px]"
+          >
+            <div
+              className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                isHovered ? "scale-[1.03]" : "scale-100"
+              }`}
+              style={{
+                transform: isHovered ? `rotateY(${isReversed ? '2deg' : '-2deg'}) rotateX(1deg)` : "rotateY(0deg) rotateX(0deg)",
+                transformStyle: "preserve-3d",
               }}
             >
-              {/* Camera notch */}
-              <div className="absolute top-[5px] left-1/2 -translate-x-1/2 z-20">
-                <div className="w-[6px] h-[6px] rounded-full bg-[#1a1a1e] border border-[#333] shadow-inner" />
-              </div>
-
-              {/* Screen Bezel */}
-              <div className="relative rounded-[8px] overflow-hidden bg-black">
-                {/* Actual Screenshot */}
-                <div className="relative aspect-[16/10] w-full">
-                  <Image
-                    src={project.image}
-                    alt={`${project.title} screenshot`}
-                    fill
-                    className={`object-cover object-top transition-all duration-700 ${
-                      isHovered
-                        ? "brightness-110 scale-[1.02]"
-                        : "brightness-100 scale-100"
-                    }`}
-                    sizes="(max-width: 768px) 100vw, 65vw"
-                    loading="lazy"
-                  />
-
-                  {/* Reflection sweep overlay */}
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none z-10"
+              {/* MacBook Screen Body */}
+              <div
+                className="relative rounded-[16px] overflow-hidden group/macbook cursor-none"
+                style={{
+                  background: "linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 50%, #1e1e22 100%)",
+                  padding: "12px 12px 0 12px",
+                  boxShadow: "0 25px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)",
+                }}
+              >
+                {/* Custom Cursor for MacBook hover */}
+                <div className="absolute inset-0 z-50 pointer-events-none opacity-0 group-hover/macbook:opacity-100 transition-opacity duration-300 overflow-hidden">
+                  <motion.div 
+                    className="absolute w-24 h-24 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/50 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest text-center shadow-[0_0_20px_rgba(0,217,255,0.4)]"
                     style={{
-                      background: useMotionTemplate`linear-gradient(105deg, transparent ${springReflectionX}%, rgba(255,255,255,0.04) ${springReflectionX}%, transparent ${springReflectionX}%)`,
+                      x: springMouseX,
+                      y: springMouseY,
+                      translateX: "-50%",
+                      translateY: "-50%",
                     }}
-                  />
+                  >
+                    View<br/>Project
+                  </motion.div>
+                </div>
 
-                  {/* Top screen light reflection */}
-                  <div
-                    className="absolute inset-0 pointer-events-none z-10"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 30%)",
-                    }}
-                  />
+                {/* Camera notch */}
+                <div className="absolute top-[5px] left-1/2 -translate-x-1/2 z-20">
+                  <div className="w-[6px] h-[6px] rounded-full bg-[#1a1a1e] border border-[#333] shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+                </div>
 
-                  {/* Screen inner shadow for depth */}
-                  <div className="absolute inset-0 pointer-events-none z-10 rounded-[8px] shadow-[inset_0_0_30px_rgba(0,0,0,0.3)]" />
+                {/* Screen Bezel */}
+                <div className="relative rounded-[8px] overflow-hidden bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+                  <div className="relative aspect-[16/10] w-full">
+                    {/* Image Loading Blur-Up */}
+                    <Image
+                      src={project.image}
+                      alt={`${project.title} screenshot`}
+                      fill
+                      className={`object-cover object-top transition-all duration-1000 ${
+                        isHovered ? "brightness-110" : "brightness-95"
+                      }`}
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                    />
+
+                    {/* Fast Hover Reflection Sweep */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-0 group-hover/macbook:opacity-20 group-hover/macbook:animate-[button-sweep_1.5s_ease-out] pointer-events-none z-10" />
+
+                    {/* Continuous Slow Reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[button-sweep_8s_linear_infinite] pointer-events-none z-10" />
+
+                    {/* Screen inner shadow for depth */}
+                    <div className="absolute inset-0 pointer-events-none z-20 rounded-[8px] shadow-[inset_0_0_30px_rgba(0,0,0,0.6)]" />
+                  </div>
+                </div>
+
+                {/* MacBook Hinge */}
+                <div className="relative h-[18px] flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2e] to-[#1c1c20]" />
+                  <div className="relative z-10 w-[80px] h-[4px] rounded-full bg-[#111] shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]" />
                 </div>
               </div>
 
-              {/* MacBook Hinge / Base */}
-              <div className="relative h-[18px] flex items-center justify-center">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, #2a2a2e 0%, #222226 40%, #1c1c20 100%)",
-                  }}
-                />
-                {/* Hinge indent */}
-                <div className="relative z-10 w-[80px] h-[4px] rounded-full bg-[#333] shadow-inner" />
-              </div>
-            </motion.div>
-
-            {/* MacBook Base Bottom (keyboard section visible part) */}
-            <div
-              className="relative h-[8px] mx-[8%] rounded-b-[8px]"
-              style={{
-                background:
-                  "linear-gradient(180deg, #1c1c20 0%, #18181c 100%)",
-                boxShadow:
-                  "0 4px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
-              }}
-            />
-
-            {/* Drop shadow / reflection on surface */}
-            <div
-              className="absolute -bottom-6 left-[10%] right-[10%] h-[20px] rounded-[50%] pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%)",
-                filter: "blur(8px)",
-              }}
-            />
-          </motion.div>
-
-          {/* Floating device glow */}
-          <motion.div
-            className="absolute -bottom-8 left-[15%] right-[15%] h-[30px] rounded-[50%] pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse, rgba(0,217,255,0.12) 0%, transparent 70%)",
-              filter: "blur(20px)",
-              opacity: glowOpacity,
-            }}
-          />
-        </motion.div>
-
-        {/* ─── Project Info ─── */}
-        <div className="w-full lg:w-[38%] xl:w-[35%] flex flex-col gap-6">
-          {/* Category tag */}
-          <motion.div
-            initial={{ opacity: 0, x: isReversed ? -20 : 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 + index * 0.15 }}
-          >
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] uppercase tracking-[0.2em] text-primary/80 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
-              {project.category}
-            </span>
-          </motion.div>
-
-          {/* Title */}
-          <motion.h3
-            className="font-heading text-2xl md:text-3xl lg:text-[2.2rem] xl:text-4xl font-bold text-white leading-tight tracking-tight"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.35 + index * 0.15 }}
-          >
-            {project.title}
-          </motion.h3>
-
-          {/* Description */}
-          <motion.p
-            className="text-secondary-foreground text-sm md:text-[15px] leading-relaxed font-sans"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 + index * 0.15 }}
-          >
-            {project.longDescription || project.description}
-          </motion.p>
-
-          {/* Separator */}
-          <motion.div
-            className="w-12 h-[1px] bg-gradient-to-r from-primary/50 to-transparent"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.45 + index * 0.15 }}
-            style={{ transformOrigin: "left" }}
-          />
-
-          {/* Tech Stack */}
-          <motion.div
-            className="flex flex-wrap gap-2"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 + index * 0.15 }}
-          >
-            {project.tech.map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium text-white/60 bg-white/[0.04] border border-white/[0.06] hover:border-primary/30 hover:text-white/80 transition-all duration-300"
-              >
-                {tech}
-              </span>
-            ))}
-          </motion.div>
-
-          {/* Action Buttons */}
-          <motion.div
-            className="flex items-center gap-3 pt-2"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.55 + index * 0.15 }}
-          >
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm font-medium text-white/80 hover:border-primary/40 hover:text-white hover:bg-white/[0.06] transition-all duration-400 hover:shadow-[0_0_20px_rgba(0,217,255,0.08)]"
-              data-magnetic="true"
-            >
-              <FiGithub
-                size={15}
-                className="group-hover:text-primary transition-colors duration-300"
+              {/* MacBook Base Bottom */}
+              <div
+                className="relative h-[8px] mx-[8%] rounded-b-[8px]"
+                style={{
+                  background: "linear-gradient(180deg, #1c1c20 0%, #0a0a0c 100%)",
+                  boxShadow: "0 10px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+                }}
               />
-              <span>Source</span>
-            </a>
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-primary/[0.08] border border-primary/20 text-sm font-medium text-primary/90 hover:bg-primary/[0.12] hover:border-primary/40 hover:text-primary transition-all duration-400 hover:shadow-[0_0_20px_rgba(0,217,255,0.12)]"
-              data-magnetic="true"
-            >
-              <span>Live Demo</span>
-              <ExternalLink
-                size={14}
-                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"
-              />
-            </a>
-            {project.caseStudy && (
+            </div>
+          </div>
+
+          {/* ─── Project Info ─── */}
+          <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-6 relative z-30">
+            {/* Title */}
+            <h3 className="font-heading text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-white leading-tight tracking-tight">
+              {project.title}
+            </h3>
+
+            {/* Premium Metrics */}
+            <div className="flex flex-wrap gap-4 pt-2">
+              {metrics.map((m, i) => (
+                <div key={i} className="flex items-center gap-2 bg-black/20 border border-white/5 rounded-lg px-3 py-1.5 backdrop-blur-sm">
+                  <m.icon size={12} className="text-primary/70" />
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-white font-bold text-sm">
+                      <AnimatedNumber value={m.value} suffix={m.suffix} />
+                    </span>
+                    <span className="text-white/40 text-[10px] uppercase tracking-wider">{m.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Description */}
+            <p className={`text-secondary-foreground text-[15px] leading-relaxed font-sans transition-colors duration-500 ${isHovered ? "text-white/80" : ""}`}>
+              {project.longDescription || project.description}
+            </p>
+
+            {/* Separator */}
+            <div className="w-full h-[1px] bg-gradient-to-r from-primary/30 via-white/10 to-transparent my-2" />
+
+            {/* Tech Stack */}
+            <div className="flex flex-wrap gap-2">
+              {project.tech.map((tech) => (
+                <span
+                  key={tech}
+                  className="group/pill px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.15em] font-medium text-white/60 bg-white/[0.04] border border-white/[0.06] hover:border-primary/50 hover:bg-primary/5 hover:text-white hover:shadow-[0_0_15px_rgba(0,217,255,0.2)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-default relative overflow-hidden"
+                >
+                  <span className="relative z-10">{tech}</span>
+                  <div className="absolute inset-0 bg-primary/20 scale-0 group-hover/pill:scale-150 transition-transform duration-500 ease-out opacity-0 group-hover/pill:opacity-100 rounded-full" />
+                </span>
+              ))}
+            </div>
+
+            {/* AI Tags */}
+            <div className="flex flex-wrap gap-2 mt-1">
+              {aiTags.map((tag) => (
+                <span key={tag} className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-[9px] uppercase tracking-widest text-primary font-bold">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-4 pt-6 mt-auto">
               <a
-                href={project.caseStudy}
+                href={project.live}
                 target="_blank"
                 rel="noreferrer"
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium text-white/50 hover:text-white/80 transition-all duration-300"
+                className="group/btn relative flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white text-black font-button font-bold overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_10px_30px_rgba(255,255,255,0.2)] active:scale-95"
                 data-magnetic="true"
               >
-                <BookOpen size={14} />
-                <span>Case Study</span>
+                <span className="relative z-10 flex items-center gap-2">
+                  Live Demo
+                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </span>
+                <div className="absolute inset-0 bg-primary transition-transform duration-500 ease-out translate-y-[101%] group-hover/btn:translate-y-0 z-0" />
+                <div className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:animate-[button-sweep_1.5s_ease-in-out_infinite] z-0" />
               </a>
-            )}
-          </motion.div>
+
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noreferrer"
+                className="group/btn relative flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-white font-button font-medium overflow-hidden transition-all duration-300 hover:border-primary/40 hover:bg-white/[0.08] hover:shadow-[0_10px_30px_rgba(0,217,255,0.1)] active:scale-95"
+                data-magnetic="true"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <FiGithub size={16} className="group-hover/btn:text-primary transition-colors" />
+                  Source Code
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -358,11 +384,11 @@ export default function Projects() {
     <section
       id="projects"
       ref={containerRef}
-      className="relative py-32 md:py-40 overflow-hidden"
+      className="relative py-32 md:py-40 overflow-hidden bg-background"
     >
       {/* Subtle faint grid behind section */}
       <div
-        className="absolute inset-0 opacity-[0.015] pointer-events-none"
+        className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
         style={{
           backgroundImage: `
             linear-gradient(to right, #ffffff 1px, transparent 1px),
@@ -373,12 +399,12 @@ export default function Projects() {
       />
 
       {/* Section ambient glow */}
-      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.02] blur-[150px] pointer-events-none" />
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.03] blur-[150px] pointer-events-none will-change-transform z-0" />
 
       <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10">
         {/* ─── Section Header ─── */}
         <motion.div
-          className="flex flex-col items-center text-center mb-28 md:mb-36"
+          className="flex flex-col items-center text-center mb-28 md:mb-36 will-change-transform"
           style={{ y: titleY }}
         >
           <motion.span
@@ -400,7 +426,7 @@ export default function Projects() {
           >
             <span className="text-white">FEATURED </span>
             <span
-              className="text-transparent bg-clip-text"
+              className="text-transparent bg-clip-text drop-shadow-[0_0_15px_rgba(0,217,255,0.3)]"
               style={{
                 backgroundImage:
                   "linear-gradient(135deg, #00D9FF 0%, #62EFFF 50%, #00D9FF 100%)",
@@ -426,8 +452,8 @@ export default function Projects() {
           <motion.div
             className="mt-8 w-16 h-[1px]"
             style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(0,217,255,0.3), transparent)",
+              background: "linear-gradient(90deg, transparent, rgba(0,217,255,0.5), transparent)",
+              boxShadow: "0 0 10px rgba(0,217,255,0.5)"
             }}
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
@@ -437,15 +463,20 @@ export default function Projects() {
         </motion.div>
 
         {/* ─── Featured Project Showcases ─── */}
-        <div className="flex flex-col gap-28 md:gap-36 lg:gap-44">
+        <div className="flex flex-col gap-32 md:gap-40 lg:gap-48 relative">
+          {/* Cyan Divider line connecting projects vertically */}
+          <div className="absolute top-20 bottom-20 left-[4%] md:left-1/2 w-[1px] bg-gradient-to-b from-transparent via-primary/10 to-transparent -z-10" />
+          
           {featuredProjects.map((project, idx) => (
-            <MacBookShowcase key={project.id} project={project} index={idx} />
+            <div key={project.id} className="relative">
+              <MacBookShowcase project={project} index={idx} />
+            </div>
           ))}
         </div>
 
         {/* ─── View All Projects CTA ─── */}
         <motion.div
-          className="flex justify-center mt-28 md:mt-36"
+          className="flex justify-center mt-32 md:mt-40"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -453,31 +484,24 @@ export default function Projects() {
         >
           <Link
             href="/projects"
-            className="group relative flex items-center gap-4 px-8 py-4 rounded-full overflow-hidden transition-all duration-500"
+            className="group relative flex items-center gap-4 px-8 py-5 rounded-2xl overflow-hidden transition-all duration-500 bg-white/[0.02] border border-white/10 hover:border-primary/40 hover:bg-white/[0.04] shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:shadow-[0_10px_30px_rgba(0,217,255,0.15)] active:scale-95"
             data-magnetic="true"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
           >
             {/* Hover background sweep */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/[0.06] to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out pointer-events-none" />
 
-            {/* Hover glow ring */}
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none shadow-[inset_0_0_0_1px_rgba(0,217,255,0.2),0_0_30px_rgba(0,217,255,0.08)]" />
-
-            <span className="relative z-10 text-sm font-semibold text-white/80 group-hover:text-white tracking-wide transition-colors duration-300 font-button">
+            <span className="relative z-10 text-sm font-bold text-white/80 group-hover:text-white tracking-wide transition-colors duration-300 font-button uppercase">
               View All Projects
             </span>
 
-            <span className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.06] border border-white/[0.08] group-hover:border-primary/30 group-hover:bg-primary/10 transition-all duration-400">
+            <span className="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.06] border border-white/[0.08] group-hover:border-primary/30 group-hover:bg-primary/10 transition-all duration-400">
               <span className="text-xs font-bold text-white/60 group-hover:text-primary transition-colors duration-300">
                 {totalProjects}
               </span>
             </span>
 
             <ArrowRight
-              size={16}
+              size={18}
               className="relative z-10 text-white/40 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300"
             />
           </Link>

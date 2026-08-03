@@ -44,7 +44,7 @@ export default function About() {
           <div className="lg:col-span-5 flex flex-col gap-10">
             <motion.div 
               className="relative w-full h-[500px] rounded-[24px] overflow-hidden glass p-4 group"
-              style={{ y: y1 }}
+              style={{ y: y1, willChange: "transform" }}
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
