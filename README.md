@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <h1>✨ Santhosh CV | Portfolio ✨</h1>
+  <p><b>A premium, high-performance, 3D-integrated personal portfolio built for the modern web.</b></p>
+  
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg?style=for-the-badge)](https://santhoshcv07.github.io/PORTFOLIO)
+  
+  [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)]()
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)]()
+  [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)]()
+  [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)]()
+  [![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)]()
+</div>
 
-## Getting Started
+<br />
 
-First, run the development server:
+## 🎯 What It Is
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This repository contains the source code for my personal portfolio. Designed to feel like a native desktop application, it combines cutting-edge web technologies to deliver an ultra-smooth, premium user experience. From inertia-based scrolling to hardware-accelerated 3D elements, every pixel is optimized for maximum performance and visual impact.
+
+## 🚀 Key Features
+
+- **🌊 Buttery Smooth Scrolling**: Powered by Lenis, the inertia-based scrolling engine makes navigating the site feel like gliding on water.
+- **🧊 3D Integration**: Seamless integration of WebGL and Three.js (via React Three Fiber) for immersive, interactive background elements and physics.
+- **⚡ Extreme Performance**: Deep-engine optimizations ensure a consistent 60–120 FPS. Uses strict React reconciliation tuning, static imports for blur placeholders, and explicit GPU composite layer promotions.
+- **🎨 Premium Animations**: Highly polished, spring-eased reveal animations triggered via Intersection Observers using Framer Motion.
+- **📱 Fully Responsive**: A flawless experience across desktop, tablet, and mobile devices, featuring a custom glassmorphic mobile navigation drawer.
+
+## 📂 Detailed Folder Structure
+
+```text
+PORTFOLIO/
+├── app/                       # Next.js 14 App Router (Pages, Layout, Globals)
+├── components/                # Reusable React Components
+│   ├── layout/                # Global layout elements (Navbar, Footer, Background, Lenis Scroll)
+│   └── sections/              # Individual page sections (Hero, About, TechStack, Projects, etc.)
+├── constants/                 # Static data and configurations
+├── public/                    # Static assets (images, fonts, 3D models)
+├── .env.local                 # Environment variables (EmailJS keys, etc.)
+├── package.json               # Project dependencies
+├── tailwind.config.ts         # Tailwind CSS configuration
+└── tsconfig.json              # TypeScript configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏗️ Architecture & Workflow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Here is a high-level overview of how the portfolio renders its highly optimized UI:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```mermaid
+graph TD
+    A[👤 User Visits] --> B(💻 Next.js Server / Static Export)
+    B --> C{Hydration}
+    C -->|Layout| D(SmoothScroll Provider / Lenis)
+    C -->|UI| E(React Three Fiber Canvas)
+    C -->|Content| F(Lazy-Loaded Sections)
+    F -->|Intersection Observer| G[✨ Framer Motion Reveals]
+    E -->|WebGL| H[3D Background & Interactions]
+```
 
-## Learn More
+## 🛠️ Setup & Local Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Running this portfolio locally is quick and easy. 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
+- An EmailJS account (for the contact form)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation Steps
 
-## Deploy on Vercel
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Santhoshcv07/PORTFOLIO.git
+   cd PORTFOLIO
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables:
+   - Create a `.env.local` file in the root directory.
+   - Add your EmailJS keys to enable the contact form:
+     ```env
+     NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+     NEXT_PUBLIC_EMAILJS_CONTACT_TEMPLATE=your_template_id
+     NEXT_PUBLIC_EMAILJS_AUTOREPLY_TEMPLATE=your_autoreply_template_id
+     NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+     ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   *The portfolio will be running locally at `http://localhost:3000`*
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🌟 Technologies Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework**: [Next.js (App Router)](https://nextjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **3D Engine**: [Three.js](https://threejs.org/) & [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+- **Smooth Scrolling**: [Lenis](https://lenis.studiofreight.com/)
+- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+
+## 🤝 Contribution
+
+Feel free to fork this project to use as a template for your own portfolio! If you find any bugs or have suggestions for improvements, please open an issue or submit a pull request.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+<div align="center">
+  <p>Built with ❤️ by <a href="https://github.com/Santhoshcv07">Santhosh CV</a></p>
+</div>
