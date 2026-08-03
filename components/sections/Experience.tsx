@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform, useInView, Variants, useSpring, useMotionValue } from "framer-motion";
+import { m as motion, useScroll, useTransform, useInView, Variants, useSpring, useMotionValue } from "framer-motion";
 import { GraduationCap, Code2, BrainCircuit, Rocket, Trophy } from "lucide-react";
 
 const journeySteps = [
@@ -115,13 +115,13 @@ function JourneyCard({
   // Unlock sequence choreography
   const cardVariants: Variants = {
     locked: {
-      x: isEven ? -20 : 20,
+      y: 30,
       opacity: 0,
-      scale: 0.95,
+      scale: 0.98,
       filter: "blur(4px)"
     },
     unlocked: {
-      x: 0,
+      y: 0,
       opacity: 1,
       scale: 1,
       filter: "blur(0px)",
@@ -129,8 +129,7 @@ function JourneyCard({
         type: "spring",
         stiffness: 100,
         damping: 20,
-        duration: 0.8,
-        ease: "easeOutExpo",
+        mass: 1,
         delay: 0.2 // Wait for node to pulse
       }
     }

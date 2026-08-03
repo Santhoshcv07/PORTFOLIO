@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence, useMotionValue } from "framer-motion";
+import { m as motion, useScroll, useTransform, useSpring, AnimatePresence, useMotionValue } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
 import { FiGithub, FiLinkedin, FiTwitter } from "react-icons/fi";
+import Image from "next/image";
+import heroImg from "@/public/assets/images/portrait_new.png";
 
 // ─── Canvas Particle System ─────────────────────────────────────────
 function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, mouseRef: React.RefObject<{x: number, y: number}>) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let animId: number;
@@ -26,12 +28,33 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
     resize();
     window.addEventListener("resize", resize);
 
+    // Pre-render particle sprite (massive performance gain)
+    const spriteCanvas = document.createElement("canvas");
+    const spriteSize = 20; // max size * 3 * 2 approx
+    spriteCanvas.width = spriteSize;
+    spriteCanvas.height = spriteSize;
+    const sCtx = spriteCanvas.getContext("2d");
+    if (sCtx) {
+      const center = spriteSize / 2;
+      const gradient = sCtx.createRadialGradient(center, center, 0, center, center, center);
+      gradient.addColorStop(0, `rgba(0, 217, 255, 1)`);
+      gradient.addColorStop(1, `rgba(0, 217, 255, 0)`);
+      sCtx.fillStyle = gradient;
+      sCtx.arc(center, center, center, 0, Math.PI * 2);
+      sCtx.fill();
+      
+      // Core dot
+      sCtx.beginPath();
+      sCtx.fillStyle = `rgba(255, 255, 255, 1)`;
+      sCtx.arc(center, center, center * 0.2, 0, Math.PI * 2);
+      sCtx.fill();
+    }
+
     let isVisible = true;
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
         if (isVisible) {
-          // Restart animation if it was paused
           cancelAnimationFrame(animId);
           draw();
         }
@@ -42,7 +65,7 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
 
     // Particles
     interface Particle {
-      x: number; y: number; size: number; speedX: number; speedY: number; opacity: number; pulse: number; pulseSpeed: number;
+      x: number; y: number; size: number; speedX: number; speedY: number; baseOpacity: number; pulse: number; pulseSpeed: number;
     }
     const particles: Particle[] = [];
     for (let i = 0; i < 40; i++) {
@@ -52,13 +75,12 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
         size: Math.random() * 2 + 0.5,
         speedX: (Math.random() - 0.5) * 0.3,
         speedY: (Math.random() - 0.5) * 0.2,
-        opacity: Math.random() * 0.4 + 0.1,
+        baseOpacity: Math.random() * 0.4 + 0.1,
         pulse: Math.random() * Math.PI * 2,
         pulseSpeed: Math.random() * 0.02 + 0.005,
       });
     }
 
-    // Neural network nodes (subset of particles for connections)
     const neuralNodes = particles.slice(0, 12);
 
     const draw = () => {
@@ -68,8 +90,9 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
       const h = window.innerHeight;
       ctx.clearRect(0, 0, w, h);
 
-      // Draw neural connections (very faint)
+      // Draw neural connections
       let connectionCount = 0;
+      ctx.lineWidth = 0.5;
       for (let i = 0; i < neuralNodes.length && connectionCount < 8; i++) {
         for (let j = i + 1; j < neuralNodes.length && connectionCount < 8; j++) {
           const dx = neuralNodes[i].x - neuralNodes[j].x;
@@ -81,21 +104,21 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
             ctx.moveTo(neuralNodes[i].x, neuralNodes[i].y);
             ctx.lineTo(neuralNodes[j].x, neuralNodes[j].y);
             ctx.strokeStyle = `rgba(0, 217, 255, ${alpha})`;
-            ctx.lineWidth = 0.5;
             ctx.stroke();
             connectionCount++;
           }
         }
       }
 
-      // Draw particles
+      // Draw particles using pre-rendered sprite
+      const mx = mouseRef.current?.x ?? 0;
+      const my = mouseRef.current?.y ?? 0;
+
       for (const p of particles) {
         p.pulse += p.pulseSpeed;
-        const currentOpacity = p.opacity * (0.6 + 0.4 * Math.sin(p.pulse));
+        const currentOpacity = p.baseOpacity * (0.6 + 0.4 * Math.sin(p.pulse));
         
-        // Mouse repulsion (very subtle)
-        const mx = mouseRef.current?.x ?? 0;
-        const my = mouseRef.current?.y ?? 0;
+        // Mouse repulsion
         const dmx = p.x - mx;
         const dmy = p.y - my;
         const mouseDist = Math.sqrt(dmx * dmx + dmy * dmy);
@@ -109,25 +132,16 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
 
         // Wrap around
         if (p.x < 0) p.x = w;
-        if (p.x > w) p.x = 0;
+        else if (p.x > w) p.x = 0;
         if (p.y < 0) p.y = h;
-        if (p.y > h) p.y = 0;
+        else if (p.y > h) p.y = 0;
 
-        // Glow
-        ctx.beginPath();
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
-        gradient.addColorStop(0, `rgba(0, 217, 255, ${currentOpacity})`);
-        gradient.addColorStop(1, `rgba(0, 217, 255, 0)`);
-        ctx.fillStyle = gradient;
-        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core dot
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(0, 217, 255, ${currentOpacity * 1.5})`;
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
+        // Draw Sprite
+        ctx.globalAlpha = currentOpacity;
+        const renderSize = p.size * 6; // size * 3 * 2
+        ctx.drawImage(spriteCanvas, p.x - renderSize / 2, p.y - renderSize / 2, renderSize, renderSize);
       }
+      ctx.globalAlpha = 1.0;
 
       animId = requestAnimationFrame(draw);
     };
@@ -326,9 +340,8 @@ export default function Hero() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.5)) drop-shadow(0 0 60px rgba(0,217,255,0.08))",
+            filter: "drop-shadow(0 0 20px rgba(0,217,255,0.08))",
             animation: "shine-sweep 8s linear infinite",
-            willChange: "background-position",
           }}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.9 }}
@@ -378,8 +391,15 @@ export default function Hero() {
             }}
           >
             {/* Portrait Image with enhanced quality (Item #23) */}
-            <div
-              className="absolute inset-0 bg-[url('/assets/images/portrait_new.png')] bg-cover bg-top bg-no-repeat transition-transform duration-1000"
+            <Image
+              src={heroImg}
+              alt="Santhosh CV Portrait"
+              fill
+              placeholder="blur"
+              priority
+              fetchPriority="high"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover object-top transition-transform duration-1000"
               style={{
                 filter: "contrast(1.05) brightness(1.02)",
               }}

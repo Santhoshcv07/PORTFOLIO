@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useState, useEffect } from "react";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { m as motion, AnimatePresence, useAnimation } from "framer-motion";
 import { 
   SiPython, SiJavascript, SiTypescript, SiReact, SiNextdotjs, SiFastapi,
   SiNodedotjs, SiHtml5, SiCss, SiFirebase, SiUnity, SiGit, 
@@ -230,7 +230,14 @@ export default function TechStack() {
         }
       `}</style>
 
-      <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10" ref={containerRef}>
+      <motion.div 
+        className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10" 
+        ref={containerRef}
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
+      >
         
         <div className="flex flex-col items-center text-center mb-24">
           <span className="text-primary font-mono text-sm tracking-widest mb-4 block">02</span>
@@ -266,7 +273,7 @@ export default function TechStack() {
             <CentralCore isHovered={isHovered} clickPulse={clickPulse} />
 
             {/* INNER ORBIT */}
-            <div className="absolute top-1/2 left-1/2 w-0 h-0 orbit-container">
+            <div className="absolute top-1/2 left-1/2 w-0 h-0 orbit-container will-change-transform" style={{ transform: "translateZ(0)" }}>
               {/* Connection Lines */}
               {innerNodesWithPositions.map((node) => (
                 <div 
@@ -329,7 +336,7 @@ export default function TechStack() {
             </div>
 
             {/* OUTER ORBIT */}
-            <div className="absolute top-1/2 left-1/2 w-0 h-0 orbit-container-ccw">
+            <div className="absolute top-1/2 left-1/2 w-0 h-0 orbit-container-ccw will-change-transform" style={{ transform: "translateZ(0)" }}>
               {/* Connection Lines */}
               {outerNodesWithPositions.map((node) => (
                 <div 
@@ -394,7 +401,7 @@ export default function TechStack() {
           </div>
         </div>
       </div>
-    </div>
-  </section>
+      </motion.div>
+    </section>
   );
 }

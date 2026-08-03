@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { m as motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, PointMaterial, Points } from "@react-three/drei";
 import * as THREE from "three";
@@ -42,19 +43,35 @@ function FloatingParticles() {
 }
 
 export default function Background() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const rawMouseX = useMotionValue(0);
+  const rawMouseY = useMotionValue(0);
+
+  const mouseX = useSpring(rawMouseX, { stiffness: 50, damping: 20 });
+  const mouseY = useSpring(rawMouseY, { stiffness: 50, damping: 20 });
 
   useEffect(() => {
+    let animationFrameId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: -(e.clientY / window.innerHeight) * 2 + 1,
-      });
+      // Throttle slightly with requestAnimationFrame if desired, but framer-motion handles it well.
+      rawMouseX.set((e.clientX / window.innerWidth) * 2 - 1);
+      rawMouseY.set(-(e.clientY / window.innerHeight) * 2 + 1);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [rawMouseX, rawMouseY]);
+
+  // Scroll Parallax
+  const { scrollYProgress } = useScroll();
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
+  // Derived transforms
+  const gridX = useTransform(mouseX, (x) => x * -10);
+  const gridY = useTransform([mouseY, parallaxY], ([m, p]: any) => m * 10 + p);
+  const glow1X = useTransform(mouseX, (x) => x * 20);
+  const glow1Y = useTransform([mouseY, parallaxY], ([m, p]: any) => m * -20 + p * 0.5);
+  const glow2X = useTransform(mouseX, (x) => x * -30);
+  const glow2Y = useTransform([mouseY, parallaxY], ([m, p]: any) => m * 30 + p * 0.8);
 
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden bg-background pointer-events-none">
@@ -67,7 +84,7 @@ export default function Background() {
       </div>
 
       {/* Animated Grid */}
-      <div 
+      <motion.div 
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `
@@ -75,8 +92,8 @@ export default function Background() {
             linear-gradient(to bottom, #ffffff 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
-          transform: `translate(${mousePosition.x * -10}px, ${mousePosition.y * 10}px)`,
-          transition: 'transform 0.1s ease-out',
+          x: gridX,
+          y: gridY,
         }}
       />
 
@@ -90,20 +107,22 @@ export default function Background() {
       />
 
       {/* Gradient Glows */}
-      <div 
-        className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full opacity-20 blur-[120px]"
+      <motion.div 
+        className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full opacity-20 blur-[80px] will-change-transform"
         style={{
           background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)',
-          transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * -20}px)`,
-          transition: 'transform 0.3s ease-out',
+          x: glow1X,
+          y: glow1Y,
+          transform: "translateZ(0)"
         }}
       />
-      <div 
-        className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full opacity-10 blur-[150px]"
+      <motion.div 
+        className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full opacity-10 blur-[100px] will-change-transform"
         style={{
           background: 'radial-gradient(circle, var(--color-accent) 0%, transparent 70%)',
-          transform: `translate(${mousePosition.x * -30}px, ${mousePosition.y * 30}px)`,
-          transition: 'transform 0.3s ease-out',
+          x: glow2X,
+          y: glow2Y,
+          transform: "translateZ(0)"
         }}
       />
     </div>

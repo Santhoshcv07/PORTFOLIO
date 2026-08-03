@@ -1,12 +1,12 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { m as motion, useMotionValue, useSpring, Variants } from "framer-motion";
 import { ArrowUp, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import { useRef, useCallback, useState } from "react";
 
 // Stagger configurations
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -17,7 +17,7 @@ const staggerContainer = {
   }
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };

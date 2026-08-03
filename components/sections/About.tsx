@@ -1,8 +1,23 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m as motion, useScroll, useTransform } from "framer-motion";
 import { Code2, Cpu, Brain, Zap } from "lucide-react";
+import Image from "next/image";
+import meImg from "@/public/assets/images/me.jpeg";
+
+const cards = [
+  { icon: Brain, title: "Problem Solver", desc: "Analytical & Logical" },
+  { icon: Code2, title: "Clean Code", desc: "Scalable & Maintainable" },
+  { icon: Zap, title: "Fast Learner", desc: "Always Improving" },
+  { icon: Cpu, title: "AI Engineer", desc: "Intelligent Systems" },
+];
+
+const stats = [
+  { value: "8+", label: "Projects Completed" },
+  { value: "5+", label: "Certifications Earned" },
+  { value: "100%", label: "Dedication & Consistency" },
+];
 
 export default function About() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,19 +28,6 @@ export default function About() {
 
   const y1 = useTransform(scrollYProgress, [0, 1], [50, -50]);
   const y2 = useTransform(scrollYProgress, [0, 1], [100, -100]);
-
-  const cards = [
-    { icon: Brain, title: "Problem Solver", desc: "Analytical & Logical" },
-    { icon: Code2, title: "Clean Code", desc: "Scalable & Maintainable" },
-    { icon: Zap, title: "Fast Learner", desc: "Always Improving" },
-    { icon: Cpu, title: "AI Engineer", desc: "Intelligent Systems" },
-  ];
-
-  const stats = [
-    { value: "8+", label: "Projects Completed" },
-    { value: "5+", label: "Certifications Earned" },
-    { value: "100%", label: "Dedication & Consistency" },
-  ];
 
   return (
     <section id="about" ref={containerRef} className="relative py-32 overflow-hidden">
@@ -45,24 +47,31 @@ export default function About() {
             <motion.div 
               className="relative w-full h-[500px] rounded-[24px] overflow-hidden glass p-4 group"
               style={{ y: y1, willChange: "transform" }}
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
               <div className="w-full h-full relative rounded-xl overflow-hidden bg-secondary">
-                 <div className="absolute inset-0 bg-[url('/assets/images/me.jpeg')] bg-cover bg-top bg-no-repeat transition-transform duration-700 group-hover:scale-110 filter grayscale group-hover:grayscale-0" />
+                 <Image 
+                   src={meImg} 
+                   alt="Santhosh CV" 
+                   fill
+                   placeholder="blur"
+                   className="object-cover object-top transition-transform duration-700 group-hover:scale-110 filter grayscale group-hover:grayscale-0"
+                   sizes="(max-width: 768px) 100vw, 50vw"
+                 />
               </div>
             </motion.div>
 
             {/* Quote Card */}
             <motion.div 
               className="glass p-8 rounded-2xl relative overflow-hidden group"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.2 }}
             >
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -80,10 +89,10 @@ export default function About() {
           {/* Right Column */}
           <div className="lg:col-span-7 flex flex-col gap-12">
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
             >
               <h3 className="text-2xl md:text-3xl text-white font-heading font-bold mb-6 leading-snug">
                 I don't just write code.<br/>
@@ -105,10 +114,10 @@ export default function About() {
                 <motion.div 
                   key={card.title}
                   className="glass p-6 rounded-2xl flex flex-col items-start gap-4 hover:-translate-y-2 transition-transform duration-300 group"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: idx * 0.1 }}
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex-center text-primary group-hover:bg-primary group-hover:text-background transition-colors duration-300">
                     <card.icon size={24} />
@@ -127,10 +136,10 @@ export default function About() {
                 <motion.div 
                   key={stat.label}
                   className="flex flex-col gap-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.4 + idx * 0.1 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.4 + idx * 0.1 }}
                 >
                   <span className="text-4xl font-hero text-white tracking-wider">{stat.value}</span>
                   <span className="text-xs text-secondary-foreground uppercase tracking-widest">{stat.label}</span>

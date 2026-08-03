@@ -6,13 +6,13 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Background from "./Background";
 import SmoothScroll from "./SmoothScroll";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence, LazyMotion, domAnimation } from "framer-motion";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   return (
-    <>
+    <LazyMotion features={domAnimation}>
       <AnimatePresence mode="wait">
         {loading ? (
           <Loader key="loader" onComplete={() => setLoading(false)} />
@@ -34,6 +34,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </LazyMotion>
   );
 }

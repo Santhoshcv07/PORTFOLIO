@@ -2,12 +2,15 @@
 
 import { useRef, useState, useCallback } from "react";
 import {
-  motion,
+  m as motion,
   useScroll,
   useTransform,
   useSpring,
   useMotionValue,
   useMotionTemplate,
+  animate,
+  useInView,
+  AnimatePresence,
 } from "framer-motion";
 import { ExternalLink, ArrowLeft, BookOpen } from "lucide-react";
 import { FiGithub } from "react-icons/fi";

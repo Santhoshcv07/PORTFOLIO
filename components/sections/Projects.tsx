@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import {
-  motion,
+  m as motion,
   useScroll,
   useTransform,
   useSpring,
@@ -64,9 +64,11 @@ function MacBookShowcase({
   const springMouseX = useSpring(mouseX, { stiffness: 150, damping: 20 });
   const springMouseY = useSpring(mouseY, { stiffness: 150, damping: 20 });
 
+  const rectRef = useRef<DOMRect | null>(null);
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
+    if (!rectRef.current) return;
+    const rect = rectRef.current;
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
@@ -81,11 +83,17 @@ function MacBookShowcase({
     mouseY.set(e.clientY - rect.top);
   }, [cardRotateX, cardRotateY, mouseX, mouseY]);
 
-  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseEnter = () => {
+    if (containerRef.current) {
+      rectRef.current = containerRef.current.getBoundingClientRect();
+    }
+    setIsHovered(true);
+  };
   const handleMouseLeave = () => {
     setIsHovered(false);
     cardRotateX.set(0);
     cardRotateY.set(0);
+    rectRef.current = null;
   };
 
   const isReversed = index % 2 !== 0;
@@ -103,10 +111,10 @@ function MacBookShowcase({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 100, scale: 0.95 }}
+      initial={{ opacity: 0, y: 30, scale: 0.98 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
       className="relative group perspective-[2000px]"
     >
       {/* CSS Particles for Featured Projects */}

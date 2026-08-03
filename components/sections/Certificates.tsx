@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Environment, ContactShadows, Cylinder, Torus, MeshReflectorMaterial, SpotLight } from "@react-three/drei";
 import * as THREE from "three";
@@ -638,7 +638,13 @@ export default function Certificates() {
 
   return (
     <section id="certificates" className="relative py-24 md:pt-32 md:pb-40 overflow-hidden bg-background">
-      <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10">
+      <motion.div 
+        className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10"
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
+      >
 
         <div className="text-center mb-8">
           <span className="text-primary font-mono text-sm tracking-widest mb-4 block">06</span>
@@ -733,7 +739,7 @@ export default function Certificates() {
             </a>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -7,6 +7,8 @@ export default function Cursor() {
   const [isMounted, setIsMounted] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const hoverRef = useRef(false);
+  const visibleRef = useRef(false);
   const cursorX = useSpring(0, { stiffness: 500, damping: 28 });
   const cursorY = useSpring(0, { stiffness: 500, damping: 28 });
   const cursorRingX = useSpring(0, { stiffness: 250, damping: 20 });
@@ -17,11 +19,13 @@ export default function Cursor() {
   useEffect(() => {
     setIsMounted(true);
     const moveCursor = (e: MouseEvent) => {
-      if (!isVisible) setIsVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setIsVisible(true);
+      }
       
       lastPos.current = { x: e.clientX, y: e.clientY };
 
-      // Check if hovering over magnetic elements
       const target = e.target as HTMLElement;
       const magneticElement = target.closest('[data-magnetic="true"]');
       
@@ -30,7 +34,6 @@ export default function Cursor() {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
-        // Attract cursor towards center of element
         const distanceX = e.clientX - centerX;
         const distanceY = e.clientY - centerY;
         
@@ -38,23 +41,35 @@ export default function Cursor() {
         cursorY.set(centerY + distanceY * 0.1);
         cursorRingX.set(centerX + distanceX * 0.2);
         cursorRingY.set(centerY + distanceY * 0.2);
-        setIsHovering(true);
+        
+        if (!hoverRef.current) {
+          hoverRef.current = true;
+          setIsHovering(true);
+        }
       } else {
         cursorX.set(e.clientX);
         cursorY.set(e.clientY);
         cursorRingX.set(e.clientX);
         cursorRingY.set(e.clientY);
         
-        // General hover state
-        const isClickable = target.closest('a, button, input, textarea, select, [role="button"]');
-        setIsHovering(!!isClickable);
+        const isClickable = !!target.closest('a, button, input, textarea, select, [role="button"]');
+        if (hoverRef.current !== isClickable) {
+          hoverRef.current = isClickable;
+          setIsHovering(isClickable);
+        }
       }
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => {
+      visibleRef.current = false;
+      setIsVisible(false);
+    };
+    const handleMouseEnter = () => {
+      visibleRef.current = true;
+      setIsVisible(true);
+    };
 
-    window.addEventListener("mousemove", moveCursor);
+    window.addEventListener("mousemove", moveCursor, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
 

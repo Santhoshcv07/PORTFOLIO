@@ -1,26 +1,35 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import { m as motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence, Variants } from "framer-motion";
 import { Send, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import emailjs from "@emailjs/browser";
 
-const staggerContainer = {
+// --- Stagger Configurations ---
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
     }
   }
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 20, mass: 1 } }
 };
+
+const headingText = "SOMETHING".split("");
+
+const socialLinks = [
+  { icon: Mail, link: "mailto:santhoshcv825@gmail.com" },
+  { icon: FiGithub, link: "https://github.com/Santhoshcv07" },
+  { icon: FiLinkedin, link: "https://www.linkedin.com/in/santhosh-cv07" },
+];
 
 export default function Contact() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -100,8 +109,6 @@ export default function Contact() {
     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const headingText = "SOMETHING".split("");
-
   return (
     <section 
       id="contact" 
@@ -154,8 +161,8 @@ export default function Contact() {
 
         {/* Ambient Glow */}
         <div 
-          className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none will-change-transform" 
-          style={{ animation: "ambient-breathe 10s ease-in-out infinite" }}
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[80px] rounded-full pointer-events-none will-change-transform" 
+          style={{ animation: "ambient-breathe 10s ease-in-out infinite", transform: "translateZ(0)" }}
         />
       </div>
 
@@ -207,11 +214,7 @@ export default function Contact() {
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex items-center gap-6">
-                {[
-                  { icon: Mail, link: "mailto:santhoshcv825@gmail.com" },
-                  { icon: FiGithub, link: "https://github.com/Santhoshcv07" },
-                  { icon: FiLinkedin, link: "https://www.linkedin.com/in/santhosh-cv07" },
-                ].map((social, i) => (
+                {socialLinks.map((social, i) => (
                   <motion.a
                     key={i}
                     href={social.link}
@@ -240,7 +243,7 @@ export default function Contact() {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-primary/5 blur-[60px] rounded-full pointer-events-none will-change-transform" style={{ transform: "translateZ(0)" }} />
 
             <motion.form
               variants={fadeUp}

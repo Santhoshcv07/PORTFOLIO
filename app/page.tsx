@@ -1,5 +1,6 @@
 import Hero from "@/components/sections/Hero";
 import dynamic from "next/dynamic";
+import LazySection from "@/components/layout/LazySection";
 
 const About = dynamic(() => import("@/components/sections/About"));
 const TechStack = dynamic(() => import("@/components/sections/TechStack"));
@@ -13,13 +14,13 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <About />
-      <TechStack />
-      <Experience />
-      <Education />
-      <Projects />
-      <Certificates />
-      <Contact />
+      <LazySection><About /></LazySection>
+      <LazySection><TechStack /></LazySection>
+      <LazySection><Experience /></LazySection>
+      <LazySection><Education /></LazySection>
+      <LazySection><Projects /></LazySection>
+      <LazySection><Certificates /></LazySection>
+      <LazySection><Contact /></LazySection>
     </>
   );
 }

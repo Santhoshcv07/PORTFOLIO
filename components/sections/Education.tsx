@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, Award, BookOpen, Building, QrCode, Scan, ShieldCheck, RefreshCw } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, RoundedBox, Html, ContactShadows } from "@react-three/drei";
@@ -516,10 +516,10 @@ export default function Education() {
           {/* Left - Content */}
           <motion.div 
             className="flex flex-col gap-10"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30, scale: 0.98 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
           >
             <div>
               <span className="text-primary font-mono text-sm tracking-widest mb-4 block">04</span>
@@ -535,10 +535,10 @@ export default function Education() {
               {/* Card 1: CGPA */}
               <motion.div 
                 className="glass p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0 }}
               >
                 <GraduationCap size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
                 <div>
@@ -551,10 +551,10 @@ export default function Education() {
               {/* Card 2: Graduation */}
               <motion.div 
                 className="glass p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.1 }}
               >
                 <BookOpen size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
                 <div>
@@ -567,10 +567,10 @@ export default function Education() {
               {/* Card 3: Education Levels */}
               <motion.div 
                 className="glass p-6 rounded-2xl flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.2 }}
               >
                 <div className="flex items-center gap-3">
                   <Building size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
@@ -598,10 +598,10 @@ export default function Education() {
               {/* Card 4: Academic Journey */}
               <motion.div 
                 className="glass p-6 rounded-2xl flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.3 }}
               >
                 <div className="flex items-center gap-3">
                   <Award size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
