@@ -150,7 +150,7 @@ function MacBookShowcase({
           rotateY: springCardY,
           transformStyle: "preserve-3d",
         }}
-        className="relative z-10 w-full rounded-[40px] p-8 md:p-12 lg:p-16 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_20px_60px_rgba(0,0,0,0.5)] transition-shadow duration-700 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(0,217,255,0.1)] overflow-hidden"
+        className="relative z-10 w-full rounded-[40px] p-6 md:p-12 lg:p-16 border border-white/[0.08] bg-white/[0.04] backdrop-blur-md md:backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_20px_60px_rgba(0,0,0,0.5)] transition-shadow duration-700 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(0,217,255,0.1)] overflow-hidden will-change-transform"
       >
         {/* Animated Background AI Gradient */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
@@ -159,7 +159,7 @@ function MacBookShowcase({
 
         {/* Hover Spotlight (8% opacity) */}
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform"
+          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform hidden md:block"
           style={{
             background: "radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%)",
             x: springMouseX,
@@ -407,7 +407,7 @@ export default function Projects() {
       />
 
       {/* Section ambient glow */}
-      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.03] blur-[150px] pointer-events-none will-change-transform z-0" />
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.03] blur-[150px] pointer-events-none will-change-transform z-0 hidden md:block" />
 
       <div className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10">
         {/* ─── Section Header ─── */}

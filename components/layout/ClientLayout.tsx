@@ -24,9 +24,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             transition={{ duration: 0.8 }}
           >
             <Background />
+            <Navbar />
             <SmoothScroll>
-              <Navbar />
-              <main className="relative z-10 flex min-h-screen flex-col overflow-hidden">
+              <main className="relative z-10 flex min-h-screen flex-col overflow-x-hidden w-full">
                 {children}
               </main>
               <Footer />

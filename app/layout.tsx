@@ -47,7 +47,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${bebasNeue.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-primary/30`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${bebasNeue.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 overflow-x-hidden`}
       >
         <ClientLayout>{children}</ClientLayout>
       </body>
