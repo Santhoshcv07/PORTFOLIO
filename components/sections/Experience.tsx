@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { m as motion, useScroll, useTransform, useInView, Variants } from "framer-motion";
+import { useRef, useState, useMemo } from "react";
+import { m as motion, useScroll, useTransform, Variants } from "framer-motion";
 import { GraduationCap, Code2, BrainCircuit, Rocket, Trophy } from "lucide-react";
 
 const journeySteps = [
@@ -75,30 +75,11 @@ function JourneyCard({
   step, 
   index, 
   isEven, 
-  scrollProgress 
 }: {
   step: typeof journeySteps[0],
   index: number,
   isEven: boolean,
-  scrollProgress: any
 }) {
-  const cardContainerRef = useRef<HTMLDivElement>(null);
-  
-  // Custom Parallax Depth based on global scroll
-  // Cards move slightly slower than the background
-  const yParallax = useTransform(scrollProgress, [0, 1], [30, -30]);
-
-  // Entrance tracking
-  const isCenter = useInView(cardContainerRef, { margin: "-40% 0px -40% 0px" });
-  const isVisible = useInView(cardContainerRef, { margin: "200px 0px 200px 0px" });
-  const [hasUnlocked, setHasUnlocked] = useState(false);
-
-  useEffect(() => {
-    if (isCenter && !hasUnlocked) {
-      setHasUnlocked(true);
-    }
-  }, [isCenter, hasUnlocked]);
-
   // Pre-calculate random values for particles to maintain purity
   const particles = useMemo(() => {
     return Array.from({ length: 3 }).map((_, i) => ({
@@ -112,22 +93,15 @@ function JourneyCard({
   // Unlock sequence choreography
   const cardVariants: Variants = {
     locked: {
-      y: 30,
+      y: 20,
       opacity: 0,
-      scale: 0.98,
-      filter: "blur(4px)"
     },
     unlocked: {
       y: 0,
       opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
       transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 20,
-        mass: 1,
-        delay: 0.2 // Wait for node to pulse
+        duration: 0.6,
+        ease: "easeOut",
       }
     }
   };
@@ -137,22 +111,23 @@ function JourneyCard({
     unlocked: { 
       scale: 1, 
       opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 20 }
+      transition: { duration: 0.5, ease: "easeOut" }
     }
   };
 
   return (
-    <div 
+    <motion.div 
       id={`journey-step-${index}`} 
-      ref={cardContainerRef} 
       className="relative flex flex-col md:flex-row items-center justify-between w-full group perspective-[1000px]"
+      initial="locked"
+      whileInView="unlocked"
+      viewport={{ once: true, amount: 0.3 }}
     >
       {/* ─── Timeline Node (Center) ─── */}
       <motion.div 
         className="absolute left-[24px] md:left-1/2 -translate-x-1/2 z-30 cursor-pointer"
         variants={nodeVariants}
-        initial="locked"
-        animate={hasUnlocked ? "unlocked" : "locked"}
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
         onClick={() => {
           document.getElementById(`journey-step-${index}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
         }}
@@ -162,21 +137,16 @@ function JourneyCard({
           <div className="absolute inset-0 rounded-full border-[2px] border-white/20 bg-[#111] group-hover/node:border-primary/50 transition-colors duration-300" />
           
           {/* Cyan Energy Core */}
-          <div className={`w-2 h-2 rounded-full transition-all duration-700 ${
-            hasUnlocked 
-              ? 'bg-primary shadow-[0_0_15px_rgba(0,217,255,1)]' 
-              : 'bg-primary/20'
-          }`} />
+          <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_15px_rgba(0,217,255,1)]" />
 
           {/* Unlock Pulse Flash */}
-          {hasUnlocked && (
-            <motion.div 
-              className="absolute inset-0 rounded-full border border-primary pointer-events-none"
-              initial={{ opacity: 1, scale: 1 }}
-              animate={{ opacity: 0, scale: 3 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            />
-          )}
+          <motion.div 
+            className="absolute inset-0 rounded-full border border-primary pointer-events-none"
+            variants={{
+              locked: { opacity: 1, scale: 1 },
+              unlocked: { opacity: 0, scale: 3, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+          />
 
           {/* Ripple on hover */}
           <div className="absolute inset-0 rounded-full border border-primary/0 group-hover/node:border-primary/50 group-hover/node:animate-ping opacity-0 group-hover/node:opacity-100 transition-opacity duration-300" />
@@ -184,27 +154,31 @@ function JourneyCard({
       </motion.div>
 
       {/* Floating Particles leaving active node */}
-      {(hasUnlocked && isVisible) && (
-        <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 top-0 pointer-events-none z-20">
-          {particles.map((p, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 rounded-full bg-primary/40 shadow-[0_0_5px_rgba(0,217,255,0.5)]"
-              initial={{ y: 0, x: 0, opacity: 1 }}
-              animate={{ 
-                y: p.y, 
-                x: p.x,
-                opacity: 0 
-              }}
-              transition={{ 
-                duration: p.duration, 
-                repeat: Infinity,
-                delay: p.delay
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <motion.div 
+        className="absolute left-[24px] md:left-1/2 -translate-x-1/2 top-0 pointer-events-none z-20"
+        variants={{
+          locked: { opacity: 0 },
+          unlocked: { opacity: 1, transition: { duration: 0.5 } }
+        }}
+      >
+        {particles.map((p, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-primary/40 shadow-[0_0_5px_rgba(0,217,255,0.5)]"
+            initial={{ y: 0, x: 0, opacity: 1 }}
+            animate={{ 
+              y: p.y, 
+              x: p.x,
+              opacity: 0 
+            }}
+            transition={{ 
+              duration: p.duration, 
+              repeat: Infinity,
+              delay: p.delay
+            }}
+          />
+        ))}
+      </motion.div>
 
       {/* ─── Empty Spacer ─── */}
       <div className={`hidden md:block w-[45%] ${isEven ? 'order-1' : 'order-2'}`} />
@@ -213,22 +187,14 @@ function JourneyCard({
       <motion.div 
         className={`w-full md:w-[45%] pl-14 md:pl-0 ${isEven ? 'order-2 md:text-left' : 'order-1 md:text-right'} relative`}
         variants={cardVariants}
-        initial="locked"
-        animate={hasUnlocked ? "unlocked" : "locked"}
-        style={{ y: yParallax, willChange: "transform, opacity" }}
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
       >
-        <div className={`relative p-6 md:p-8 rounded-[20px] md:rounded-[24px] bg-[#111]/40 backdrop-blur-xl border transition-all duration-700 ease-out flex flex-col overflow-hidden ${
+        <div className={`relative p-6 md:p-8 rounded-[20px] md:rounded-[24px] bg-[#111]/40 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_rgba(0,0,0,0.5)] hover:border-primary/30 hover:-translate-y-1 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_50px_rgba(0,0,0,0.6),0_0_30px_rgba(0,217,255,0.05)] hover:bg-[#151515]/60 transition-all duration-700 ease-out flex flex-col overflow-hidden ${
           isEven ? 'items-start text-left' : 'items-start md:items-end text-left md:text-right'
-        } ${
-          hasUnlocked 
-            ? 'border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_rgba(0,0,0,0.5)] hover:border-primary/30 hover:-translate-y-1 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_50px_rgba(0,0,0,0.6),0_0_30px_rgba(0,217,255,0.05)] hover:bg-[#151515]/60' 
-            : 'border-white/5 opacity-50'
         }`}>
 
           {/* Background Ambient Glow for Active Card */}
-          {hasUnlocked && (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          )}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
           <div className="relative z-10 w-full">
             {/* Numbering & Year */}
@@ -246,13 +212,13 @@ function JourneyCard({
             <div className={`relative w-[50px] h-[50px] md:w-[60px] md:h-[60px] flex items-center justify-center mb-5 md:mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isEven ? 'mx-0' : 'mx-0 md:ml-auto'}`}>
               
               {/* Floating slow breathe */}
-              <div className={`absolute inset-0 bg-primary/5 rounded-full blur-md ${isVisible ? 'animate-[ambient-breathe_4s_ease-in-out_infinite]' : ''}`} />
+              <div className="absolute inset-0 bg-primary/5 rounded-full blur-md" />
               
               {/* Rotating Segmented Ring */}
-              <svg className={`absolute inset-0 w-full h-full text-primary/30 ${isVisible ? 'animate-[spin_10s_linear_infinite]' : ''}`} viewBox="0 0 100 100">
+              <svg className="absolute inset-0 w-full h-full text-primary/30 animate-[spin_10s_linear_infinite]" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="10 5 30 5" opacity="0.5" />
               </svg>
-              <svg className={`absolute inset-0 w-full h-full text-primary/10 ${isVisible ? 'animate-[spin_15s_linear_infinite_reverse]' : ''}`} viewBox="0 0 100 100">
+              <svg className="absolute inset-0 w-full h-full text-primary/10 animate-[spin_15s_linear_infinite_reverse]" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="20 10" opacity="0.5" />
               </svg>
 
@@ -275,7 +241,7 @@ function JourneyCard({
           </div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -288,7 +254,7 @@ export default function Experience() {
     offset: ["start center", "end center"],
   });
 
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
   // Check if user has reached the end of the timeline
   const [journeyComplete, setJourneyComplete] = useState(false);
@@ -334,8 +300,8 @@ export default function Experience() {
           
           {/* Fill Bar */}
           <motion.div 
-            className="absolute left-[24px] md:left-1/2 md:-translate-x-1/2 top-0 w-[2px] bg-primary origin-top shadow-[0_0_15px_rgba(0,217,255,0.6)] z-10"
-            style={{ height: lineHeight }}
+            className="absolute left-[24px] md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-[2px] bg-primary origin-top shadow-[0_0_15px_rgba(0,217,255,0.6)] z-10"
+            style={{ scaleY }}
           />
 
           {/* Pipeline Data Pulses (Small packets traveling down) */}
@@ -352,7 +318,6 @@ export default function Experience() {
                 step={step}
                 index={index}
                 isEven={index % 2 === 0}
-                scrollProgress={scrollYProgress}
               />
             ))}
           </div>
