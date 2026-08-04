@@ -196,14 +196,6 @@ function CertificateMesh({ index, continuousIndex, total }: { index: number, con
 }
 
 function Pedestal() {
-  const ringsRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (ringsRef.current) {
-      ringsRef.current.rotation.y = state.clock.elapsedTime * 0.1;
-    }
-  });
-
   return (
     <group position={[0, -1.75, 0]}>
 
@@ -281,27 +273,8 @@ function Pedestal() {
         </Torus>
       </group>
 
-      {/* Faint volumetric cyan light rising from the center */}
-      <Cylinder args={[0.3, 2.2, 1.5, 64]} position={[0, 0.8, 0]}>
-        <meshBasicMaterial color="#00E5FF" transparent opacity={0.015} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} depthWrite={false} />
-      </Cylinder>
-
-      {/* Holographic concentric rings floating just above the platform */}
-      <group ref={ringsRef} position={[0, 0.25, 0]}>
-        <Torus args={[1.8, 0.005, 16, 100]} rotation-x={Math.PI / 2}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.6} transparent opacity={0.4} />
-        </Torus>
-        <Torus args={[1.4, 0.005, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.1, 0]}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.4} transparent opacity={0.3} />
-        </Torus>
-        <Torus args={[1.0, 0.005, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.2, 0]}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.3} transparent opacity={0.2} />
-        </Torus>
-      </group>
-
-      {/* Soft radial light on the top surface where active certificate stands */}
-      <pointLight position={[0, 0.5, 1]} intensity={1.0} color="#00E5FF" distance={4} />
-      <pointLight position={[0, 0.5, -1]} intensity={0.5} color="#00E5FF" distance={4} />
+      {/* Subtle ambient reflection light on the podium surface */}
+      <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#00E5FF" distance={3} />
 
     </group>
   );
@@ -345,218 +318,7 @@ function CameraFit() {
   return null;
 }
 
-/* ─── Moving-Head Stage Light Fixture (physical 3D model) ─── */
-function MovingHeadFixture({ side }: { side: 'left' | 'right' }) {
-  const fixtureRef = useRef<THREE.Group>(null);
-  const mirrorSide = side === 'left' ? 1 : -1;
 
-  // Tilt angle: head looks diagonally upward toward center
-  const headTiltX = -0.65; // angle the barrel upward
-  const headTiltZ = mirrorSide * 0.25; // slight inward cant
-
-  return (
-    <group ref={fixtureRef}>
-      {/* ── Base Plate ── */}
-      <Cylinder args={[0.38, 0.42, 0.08, 32]} position={[0, 0.04, 0]}>
-        <meshStandardMaterial color="#0a0a0a" metalness={0.95} roughness={0.25} />
-      </Cylinder>
-      {/* Base rim ring */}
-      <Torus args={[0.40, 0.015, 16, 48]} rotation-x={Math.PI / 2} position={[0, 0.08, 0]}>
-        <meshStandardMaterial color="#222222" metalness={0.9} roughness={0.15} />
-      </Torus>
-
-      {/* ── Yoke / U-Frame ── */}
-      <group position={[0, 0.18, 0]}>
-        {/* Left yoke arm */}
-        <mesh position={[-0.22, 0.22, 0]}>
-          <boxGeometry args={[0.04, 0.44, 0.06]} />
-          <meshStandardMaterial color="#111111" metalness={0.9} roughness={0.2} />
-        </mesh>
-        {/* Right yoke arm */}
-        <mesh position={[0.22, 0.22, 0]}>
-          <boxGeometry args={[0.04, 0.44, 0.06]} />
-          <meshStandardMaterial color="#111111" metalness={0.9} roughness={0.2} />
-        </mesh>
-        {/* Yoke cross-bar (top) */}
-        <mesh position={[0, 0.44, 0]}>
-          <boxGeometry args={[0.48, 0.04, 0.06]} />
-          <meshStandardMaterial color="#111111" metalness={0.9} roughness={0.2} />
-        </mesh>
-      </group>
-
-      {/* ── Head / Barrel (tilted to aim upward-center) ── */}
-      <group position={[0, 0.55, 0]} rotation={[headTiltX, 0, headTiltZ]}>
-        {/* Main barrel housing */}
-        <Cylinder args={[0.18, 0.22, 0.5, 32]} rotation={[Math.PI / 2, 0, 0]}>
-          <meshStandardMaterial color="#0d0d0d" metalness={0.9} roughness={0.2} />
-        </Cylinder>
-        {/* Lens bezel (front ring) */}
-        <Torus args={[0.19, 0.02, 16, 32]} position={[0, 0, 0.26]}>
-          <meshStandardMaterial color="#1a1a1a" metalness={0.95} roughness={0.1} />
-        </Torus>
-        {/* Lens glass (front face — emissive white glow) */}
-        <mesh position={[0, 0, 0.27]}>
-          <circleGeometry args={[0.16, 32]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.95} />
-        </mesh>
-        {/* Rear cap */}
-        <mesh position={[0, 0, -0.26]} rotation={[Math.PI, 0, 0]}>
-          <circleGeometry args={[0.18, 32]} />
-          <meshStandardMaterial color="#080808" metalness={0.9} roughness={0.3} />
-        </mesh>
-        {/* Cooling fins (decorative rings) */}
-        {[0.08, -0.04, -0.16].map((z, i) => (
-          <Torus key={i} args={[0.20, 0.008, 8, 32]} position={[0, 0, z]}>
-            <meshStandardMaterial color="#151515" metalness={0.85} roughness={0.3} />
-          </Torus>
-        ))}
-      </group>
-    </group>
-  );
-}
-
-/* ─── Stage Lights: two bottom-mounted moving-heads with white beams ─── */
-function StageLights() {
-  const [target] = useState(() => new THREE.Object3D());
-  const leftBeamRef = useRef<THREE.Group>(null);
-  const rightBeamRef = useRef<THREE.Group>(null);
-  const leftGlowRef = useRef<THREE.Mesh>(null);
-  const rightGlowRef = useRef<THREE.Mesh>(null);
-
-  // Very subtle breathing animation (95% → 100% intensity)
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    // Slow sinusoidal breathing — barely perceptible
-    const breathL = 0.95 + 0.05 * Math.sin(t * 0.8);
-    const breathR = 0.95 + 0.05 * Math.sin(t * 0.8 + 1.2); // phase offset
-
-    if (leftBeamRef.current) leftBeamRef.current.scale.setScalar(breathL);
-    if (rightBeamRef.current) rightBeamRef.current.scale.setScalar(breathR);
-
-    // Subtle bloom opacity pulsing on the glow cones
-    if (leftGlowRef.current) {
-      (leftGlowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.035 * breathL;
-    }
-    if (rightGlowRef.current) {
-      (rightGlowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.035 * breathR;
-    }
-  });
-
-  // Positions: bottom-left and bottom-right of the scene, sitting on the floor plane
-  const leftPos: [number, number, number] = [-5.5, -2.55, 3.5];
-  const rightPos: [number, number, number] = [5.5, -2.55, 3.5];
-
-  return (
-    <>
-      {/* Invisible aim target: center of front certificate area */}
-      <primitive object={target} position={[0, 0.2, 0]} />
-
-      {/* ════════ LEFT SPOTLIGHT ════════ */}
-      <group position={leftPos}>
-        {/* Physical moving-head fixture */}
-        <MovingHeadFixture side="left" />
-
-        {/* Volumetric white beam (drei SpotLight with fog) */}
-        <group ref={leftBeamRef} position={[0, 0.55, 0]}>
-          <SpotLight
-            target={target}
-            intensity={18}
-            penumbra={0.5}
-            angle={0.35}
-            color="#ffffff"
-            castShadow
-            distance={20}
-            attenuation={3}
-            anglePower={3}
-            volumetric
-            opacity={0.25}
-            radiusTop={0.02}
-            radiusBottom={1.8}
-          />
-        </group>
-
-        {/* Additive volumetric glow cone (visible fog in beam path) */}
-        <mesh ref={leftGlowRef} position={[2.5, 1.5, -1.5]} rotation={[0.2, -0.45, 0.55]}>
-          <coneGeometry args={[2.0, 8.0, 32, 1, true]} />
-          <meshBasicMaterial
-            color="#ffffff"
-            transparent
-            opacity={0.035}
-            side={THREE.DoubleSide}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Subtle bloom halo at the lens */}
-        <mesh position={[0, 0.55, 0.27]} rotation={[-0.65, 0, 0.25]}>
-          <circleGeometry args={[0.5, 32]} />
-          <meshBasicMaterial
-            color="#ffffff"
-            transparent
-            opacity={0.08}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      </group>
-
-      {/* ════════ RIGHT SPOTLIGHT ════════ */}
-      <group position={rightPos}>
-        {/* Physical moving-head fixture */}
-        <MovingHeadFixture side="right" />
-
-        {/* Volumetric white beam (drei SpotLight with fog) */}
-        <group ref={rightBeamRef} position={[0, 0.55, 0]}>
-          <SpotLight
-            target={target}
-            intensity={18}
-            penumbra={0.5}
-            angle={0.35}
-            color="#ffffff"
-            castShadow
-            distance={20}
-            attenuation={3}
-            anglePower={3}
-            volumetric
-            opacity={0.25}
-            radiusTop={0.02}
-            radiusBottom={1.8}
-          />
-        </group>
-
-        {/* Additive volumetric glow cone (visible fog in beam path) */}
-        <mesh ref={rightGlowRef} position={[-2.5, 1.5, -1.5]} rotation={[0.2, 0.45, -0.55]}>
-          <coneGeometry args={[2.0, 8.0, 32, 1, true]} />
-          <meshBasicMaterial
-            color="#ffffff"
-            transparent
-            opacity={0.035}
-            side={THREE.DoubleSide}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Subtle bloom halo at the lens */}
-        <mesh position={[0, 0.55, 0.27]} rotation={[-0.65, 0, -0.25]}>
-          <circleGeometry args={[0.5, 32]} />
-          <meshBasicMaterial
-            color="#ffffff"
-            transparent
-            opacity={0.08}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      </group>
-
-      {/* Bloom wash on pedestal surface from both lights */}
-      <pointLight position={[-2, -1.2, 2]} intensity={0.4} color="#ffffff" distance={6} />
-      <pointLight position={[2, -1.2, 2]} intensity={0.4} color="#ffffff" distance={6} />
-    </>
-  );
-}
 
 function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, total: number }) {
   const carouselGroupRef = useRef<THREE.Group>(null);
@@ -584,8 +346,6 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
       <ambientLight intensity={0.2} color="#4488ff" />
       {/* Soft main key light for overall illumination */}
       <spotLight position={[0, 6, 8]} intensity={1.5} penumbra={0.6} color="#ffffff" castShadow />
-
-      <StageLights />
 
       <Environment preset="night" />
 

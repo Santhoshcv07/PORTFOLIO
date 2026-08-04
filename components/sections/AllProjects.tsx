@@ -134,9 +134,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                     src={project.image}
                     alt={`${project.title} screenshot`}
                     fill
-                    className={`object-cover object-top transition-all duration-700 ${
+                    className={`object-cover object-top transition-all duration-300 ease-out ${
                       isHovered
-                        ? "brightness-110 scale-[1.03]"
+                        ? "brightness-[1.05] scale-[1.02]"
                         : "brightness-100 scale-100"
                     }`}
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -161,6 +161,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                   />
 
                   <div className="absolute inset-0 pointer-events-none z-10 shadow-[inset_0_0_20px_rgba(0,0,0,0.3)]" />
+                  
+                  {/* Soft Cyan Glow on Hover */}
+                  <div className={`absolute inset-0 pointer-events-none z-10 transition-opacity duration-300 ease-out ${isHovered ? 'opacity-100' : 'opacity-0'} shadow-[inset_0_0_40px_rgba(0,217,255,0.15)]`} />
                 </div>
               </div>
 
@@ -194,9 +197,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] text-primary/60 font-medium">
                   <span className="w-1 h-1 rounded-full bg-primary/50" />
                   {project.category}
-                </span>
-                <span className="text-[10px] text-white/25 font-mono">
-                  {project.year}
                 </span>
               </div>
 
@@ -249,17 +249,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                   <span>Live Demo</span>
                   <ExternalLink size={12} />
                 </a>
-                {project.caseStudy && (
-                  <a
-                    href={project.caseStudy}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs text-white/40 hover:text-white/70 transition-colors duration-300"
-                    data-magnetic="true"
-                  >
-                    <BookOpen size={12} />
-                  </a>
-                )}
               </div>
             </div>
           </div>

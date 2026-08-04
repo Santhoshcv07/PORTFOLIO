@@ -99,17 +99,6 @@ function MacBookShowcase({
 
   const isReversed = index % 2 !== 0;
 
-  // Generate Dummy Premium Metrics & Tags based on category for the showcase
-  const isAI = project.category.includes("AI");
-  const metrics = [
-    { icon: Star, value: 120 + index * 45, label: "Stars" },
-    { icon: Users, value: 2400 + index * 1200, label: "Users", suffix: "+" },
-    { icon: Zap, value: 98, label: "Lighthouse" },
-    ...(isAI ? [{ icon: BrainCircuit, value: 4, label: "Models", suffix: "" }] : []),
-  ];
-
-  const aiTags = isAI ? ["🤖 LLM", "🧠 RAG", "⚡ FastAPI", "🔐 JWT"] : ["⚡ Perf", "🔐 Auth", "📊 Analytics"];
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30, scale: 0.98 }}
@@ -172,27 +161,7 @@ function MacBookShowcase({
           transition={{ duration: 0.5 }}
         />
 
-        {/* Numbering & Badges */}
-        <div className="absolute top-6 left-6 md:top-8 md:left-8 right-6 md:right-8 flex justify-between items-center z-20 pointer-events-none">
-          <span className="font-heading text-3xl md:text-5xl font-light text-white/10 tracking-tighter">
-            #{String(index + 1).padStart(2, '0')}
-          </span>
-          <div className="flex gap-2 md:gap-3">
-            <span className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 py-1.5 md:px-3 rounded-full bg-black/40 border border-white/10 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-white/70 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shadow-[0_0_8px_rgba(0,217,255,0.8)]" />
-              {project.featured ? "Featured" : "Production"}
-            </span>
-            {project.live && (
-              <span className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 py-1.5 md:px-3 rounded-full bg-success/10 border border-success/20 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-success font-medium backdrop-blur-md">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-success"></span>
-                </span>
-                Live
-              </span>
-            )}
-          </div>
-        </div>
+        {/* Minimal Content Wrapper */}
 
         <div
           className={`relative z-10 flex flex-col ${
@@ -221,20 +190,7 @@ function MacBookShowcase({
                   boxShadow: "0 25px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)",
                 }}
               >
-                {/* Custom Cursor for MacBook hover */}
-                <div className="absolute inset-0 z-50 pointer-events-none opacity-0 group-hover/macbook:opacity-100 transition-opacity duration-300 overflow-hidden hidden md:block">
-                  <motion.div 
-                    className="absolute w-24 h-24 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/50 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest text-center shadow-[0_0_20px_rgba(0,217,255,0.4)]"
-                    style={{
-                      x: springMouseX,
-                      y: springMouseY,
-                      translateX: "-50%",
-                      translateY: "-50%",
-                    }}
-                  >
-                    View<br/>Project
-                  </motion.div>
-                </div>
+                {/* Removed Custom Cursor */}
 
                 {/* Camera notch */}
                 <div className="absolute top-[5px] left-1/2 -translate-x-1/2 z-20">
@@ -249,8 +205,8 @@ function MacBookShowcase({
                       src={project.image}
                       alt={`${project.title} screenshot`}
                       fill
-                      className={`object-cover object-top transition-all duration-1000 ${
-                        isHovered ? "brightness-110" : "brightness-95"
+                      className={`object-cover object-top transition-all duration-300 ease-out ${
+                        isHovered ? "brightness-[1.05] scale-[1.02]" : "brightness-100 scale-100"
                       }`}
                       sizes="(max-width: 768px) 100vw, 60vw"
                       loading="lazy"
@@ -263,6 +219,9 @@ function MacBookShowcase({
 
                     {/* Continuous Slow Reflection */}
                     <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full ${isInView ? 'animate-[button-sweep_8s_linear_infinite]' : ''} pointer-events-none z-10 hidden md:block`} />
+
+                    {/* Soft Cyan Glow on Hover */}
+                    <div className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-300 ease-out opacity-0 group-hover/macbook:opacity-100 shadow-[inset_0_0_40px_rgba(0,217,255,0.15)]" />
 
                     {/* Screen inner shadow for depth */}
                     <div className="absolute inset-0 pointer-events-none z-20 rounded-[8px] shadow-[inset_0_0_30px_rgba(0,0,0,0.6)]" />
@@ -288,26 +247,18 @@ function MacBookShowcase({
           </div>
 
           {/* ─── Project Info ─── */}
-          <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-6 relative z-30">
+          <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-5 relative z-30">
+            {/* Category */}
+            <span className="text-primary/70 font-mono text-xs uppercase tracking-[0.2em]">
+              {project.category}
+            </span>
+
             {/* Title */}
             <h3 className="font-heading text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-white leading-tight tracking-tight">
               {project.title}
             </h3>
 
-            {/* Premium Metrics */}
-            <div className="flex flex-wrap gap-4 pt-2">
-              {metrics.map((m, i) => (
-                <div key={i} className="flex items-center gap-2 bg-black/20 border border-white/5 rounded-lg px-3 py-1.5 backdrop-blur-sm">
-                  <m.icon size={12} className="text-primary/70" />
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-white font-bold text-sm">
-                      <AnimatedNumber value={m.value} suffix={m.suffix} />
-                    </span>
-                    <span className="text-white/40 text-[10px] uppercase tracking-wider">{m.label}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Minimal spacing between title and description */}
 
             {/* Description */}
             <p className={`text-secondary-foreground text-[15px] leading-relaxed font-sans transition-colors duration-500 ${isHovered ? "text-white/80" : ""}`}>
@@ -330,14 +281,7 @@ function MacBookShowcase({
               ))}
             </div>
 
-            {/* AI Tags */}
-            <div className="flex flex-wrap gap-2 mt-1">
-              {aiTags.map((tag) => (
-                <span key={tag} className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-primary/10 border border-primary/20 text-[9px] uppercase tracking-widest text-primary font-bold">
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Action Buttons */}
 
             {/* Action Buttons */}
             <div className="flex items-center gap-4 pt-6 mt-auto">

@@ -23,7 +23,6 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 20, mass: 1 } }
 };
 
-const headingText = "SOMETHING".split("");
 
 const socialLinks = [
   { icon: Mail, link: "mailto:santhoshcv825@gmail.com" },
@@ -185,20 +184,15 @@ export default function Contact() {
               {/* Premium Heading */}
               <motion.h2 variants={fadeUp} className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-white uppercase tracking-wider mb-6 leading-none relative">
                 LET'S BUILD <br />
-                <span className="flex">
-                  {headingText.map((char, index) => (
-                    <motion.span
-                      key={index}
-                      initial={{ opacity: 0, filter: "blur(8px)", y: 20 }}
-                      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.3 + index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent drop-shadow-[0_0_15px_rgba(0,217,255,0.3)] inline-block hover:-translate-y-2 hover:drop-shadow-[0_0_25px_rgba(0,217,255,0.8)] transition-all duration-300 cursor-default"
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
-                </span>
+                <motion.span
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent drop-shadow-[0_0_15px_rgba(0,217,255,0.3)] inline-block my-2"
+                >
+                  SOMETHING
+                </motion.span> <br />
                 EXTRAORDINARY
               </motion.h2>
 
