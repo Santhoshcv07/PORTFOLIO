@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { m as motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence, Variants } from "framer-motion";
+import { m as motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence, Variants, useInView } from "framer-motion";
 import { Send, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import emailjs from "@emailjs/browser";
@@ -33,6 +33,7 @@ const socialLinks = [
 
 export default function Contact() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px 0px 200px 0px" });
   const [formState, setFormState] = useState({ name: "", email: "", message: "", honeypot: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -120,7 +121,7 @@ export default function Contact() {
     >
       {/* Mouse Interaction Flashlight */}
       <motion.div 
-        className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform"
+        className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform hidden md:block"
         style={{
           background: "radial-gradient(circle, rgba(0,217,255,0.06) 0%, transparent 50%)",
           x: springX,
@@ -152,7 +153,7 @@ export default function Contact() {
               height: Math.random() * 2 + 1 + "px",
               left: Math.random() * 100 + "%",
               top: Math.random() * 100 + "%",
-              animation: `particle-drift ${15 + Math.random() * 20}s linear infinite`,
+              animation: isInView ? `particle-drift ${15 + Math.random() * 20}s linear infinite` : 'none',
               animationDelay: `-${Math.random() * 20}s`,
               boxShadow: "0 0 8px 1px rgba(0,217,255,0.3)"
             }}
@@ -162,7 +163,7 @@ export default function Contact() {
         {/* Ambient Glow */}
         <div 
           className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[80px] rounded-full pointer-events-none will-change-transform" 
-          style={{ animation: "ambient-breathe 10s ease-in-out infinite", transform: "translateZ(0)" }}
+          style={{ animation: isInView ? "ambient-breathe 10s ease-in-out infinite" : 'none', transform: "translateZ(0)" }}
         />
       </div>
 
@@ -300,7 +301,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     style={{ caretColor: '#00D9FF' }}
-                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
+                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-base text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
                     placeholder="John Doe"
                   />
                 </div>
@@ -318,7 +319,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     style={{ caretColor: '#00D9FF' }}
-                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
+                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-base text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -336,7 +337,7 @@ export default function Contact() {
                     required
                     rows={5}
                     style={{ caretColor: '#00D9FF' }}
-                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 resize-none placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
+                    className="relative w-full bg-background/50 border border-white/10 rounded-2xl px-6 py-4 text-base text-white font-sans focus:outline-none focus:border-primary focus:bg-white/[0.02] hover:-translate-y-[2px] transition-all duration-300 resize-none placeholder:text-white/20 focus:placeholder:opacity-0 shadow-sm"
                     placeholder="Tell me about your project..."
                   />
                 </div>

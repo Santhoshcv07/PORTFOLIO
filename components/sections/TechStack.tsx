@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useState, useEffect } from "react";
-import { m as motion, AnimatePresence, useAnimation } from "framer-motion";
+import { m as motion, AnimatePresence, useInView } from "framer-motion";
 import { 
   SiPython, SiJavascript, SiTypescript, SiReact, SiNextdotjs, SiFastapi,
   SiNodedotjs, SiHtml5, SiCss, SiFirebase, SiUnity, SiGit, 
@@ -11,7 +11,7 @@ import { TbBrandCSharp, TbBrandOpenai } from "react-icons/tb";
 import { Database } from "lucide-react";
 
 // 2D AI Core Component (Optimized)
-function CentralCore({ isHovered, clickPulse }: { isHovered: boolean, clickPulse: number }) {
+function CentralCore({ isHovered, clickPulse, isInView }: { isHovered: boolean, clickPulse: number, isInView: boolean }) {
   const [clicked, setClicked] = useState(false);
   const [hoverRipples, setHoverRipples] = useState<{ id: number }[]>([]);
 
@@ -49,7 +49,7 @@ function CentralCore({ isHovered, clickPulse }: { isHovered: boolean, clickPulse
       <div 
         className="absolute inset-0 rounded-full border border-primary/40 pointer-events-none blur-[2px]"
         style={{
-          animation: 'core-energy-ripple 9s cubic-bezier(0.1, 0.5, 0.3, 1) infinite',
+          animation: isInView ? 'core-energy-ripple 9s cubic-bezier(0.1, 0.5, 0.3, 1) infinite' : 'none',
         }}
       />
 
@@ -70,21 +70,21 @@ function CentralCore({ isHovered, clickPulse }: { isHovered: boolean, clickPulse
       <div 
         className="absolute inset-0 rounded-full pointer-events-none transition-all duration-700 ease-in-out"
         style={{
-          boxShadow: '0 0 70px rgba(0, 217, 255, 0.5), inset 0 0 20px rgba(0, 217, 255, 0.2)',
-          opacity: isHovered ? 0.65 : 0.35, /* 15% brighter on hover compared to breathing max (0.5) */
+          boxShadow: '0 0 50px rgba(0, 217, 255, 0.4), inset 0 0 20px rgba(0, 217, 255, 0.1)',
+          opacity: isHovered ? 0.65 : 0.35,
           transform: isHovered ? 'scale(1.15)' : 'scale(1)',
-          animation: isHovered ? 'none' : 'core-glow-pulse 5.5s ease-in-out infinite'
+          animation: (!isInView || isHovered) ? 'none' : 'core-glow-pulse 5.5s ease-in-out infinite'
         }}
       />
 
       {/* Floating & Pulsing wrapper */}
       <div 
         className="flex flex-col items-center justify-center w-full h-full pointer-events-none"
-        style={{ animation: 'core-float 7s ease-in-out infinite' }}
+        style={{ animation: isInView ? 'core-float 7s ease-in-out infinite' : 'none' }}
       >
         <div 
           className="flex flex-col items-center justify-center"
-          style={{ animation: 'core-scale-pulse 5.5s ease-in-out infinite' }}
+          style={{ animation: isInView ? 'core-scale-pulse 5.5s ease-in-out infinite' : 'none' }}
         >
           <span className="font-heading text-4xl font-bold text-white tracking-wider drop-shadow-[0_0_15px_rgba(0,217,255,0.8)] leading-none">SC</span>
           <span className="text-primary text-[9px] font-mono tracking-widest mt-1.5 opacity-90 text-center leading-tight">
@@ -122,6 +122,7 @@ const outerNodes = [
 
 export default function TechStack() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "0px 0px -200px 0px" });
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [clickPulse, setClickPulse] = useState(0);
@@ -251,7 +252,7 @@ export default function TechStack() {
 
         {/* Core & Floating Nodes Container */}
         <div 
-          className={`relative w-full max-w-[900px] mx-auto aspect-square flex items-center justify-center ${isHovered ? 'orbit-paused' : ''}`}
+          className={`relative w-full max-w-[900px] mx-auto aspect-square flex items-center justify-center ${(isHovered || !isInView) ? 'orbit-paused' : ''}`}
         >
           
           {/* Orbit Responsive Scaler */}
@@ -270,7 +271,7 @@ export default function TechStack() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border transition-all duration-1000 ease-in-out pointer-events-none" style={{ borderColor: isHovered ? 'rgba(0, 217, 255, 0.25)' : 'rgba(0, 217, 255, 0.08)', boxShadow: isHovered ? '0 0 40px rgba(0, 217, 255, 0.05)' : 'none' }} />
 
             {/* 2D AI Core */}
-            <CentralCore isHovered={isHovered} clickPulse={clickPulse} />
+            <CentralCore isHovered={isHovered} clickPulse={clickPulse} isInView={isInView} />
 
             {/* INNER ORBIT */}
             <div className="absolute top-1/2 left-1/2 w-0 h-0 orbit-container will-change-transform" style={{ transform: "translateZ(0)" }}>

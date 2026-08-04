@@ -89,15 +89,15 @@ function JourneyCard({
   const yParallax = useTransform(scrollProgress, [0, 1], [30, -30]);
 
   // Entrance tracking
-  const isInView = useInView(cardContainerRef, { margin: "-40% 0px -40% 0px" });
+  const isCenter = useInView(cardContainerRef, { margin: "-40% 0px -40% 0px" });
+  const isVisible = useInView(cardContainerRef, { margin: "200px 0px 200px 0px" });
   const [hasUnlocked, setHasUnlocked] = useState(false);
 
   useEffect(() => {
-    if (isInView && !hasUnlocked) {
+    if (isCenter && !hasUnlocked) {
       setHasUnlocked(true);
-      // Optional: Trigger tiny UI sound here (Audio API)
     }
-  }, [isInView, hasUnlocked]);
+  }, [isCenter, hasUnlocked]);
 
   // Spotlight logic
   const mouseX = useMotionValue(0);
@@ -187,7 +187,7 @@ function JourneyCard({
       </motion.div>
 
       {/* Floating Particles leaving active node */}
-      {hasUnlocked && (
+      {(hasUnlocked && isVisible) && (
         <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 top-0 pointer-events-none z-20">
           {Array.from({ length: 3 }).map((_, i) => (
             <motion.div
@@ -214,14 +214,14 @@ function JourneyCard({
 
       {/* ─── Acrylic Card ─── */}
       <motion.div 
-        className={`w-full md:w-[45%] pl-16 md:pl-0 ${isEven ? 'order-2 md:text-left' : 'order-1 md:text-right'} relative`}
+        className={`w-full md:w-[45%] pl-14 md:pl-0 ${isEven ? 'order-2 md:text-left' : 'order-1 md:text-right'} relative`}
         variants={cardVariants}
         initial="locked"
         animate={hasUnlocked ? "unlocked" : "locked"}
         style={{ y: yParallax, willChange: "transform, opacity" }}
         onMouseMove={handleMouseMove}
       >
-        <div className={`relative p-8 rounded-[24px] bg-[#111]/40 backdrop-blur-xl border transition-all duration-700 ease-out flex flex-col overflow-hidden ${
+        <div className={`relative p-6 md:p-8 rounded-[20px] md:rounded-[24px] bg-[#111]/40 backdrop-blur-xl border transition-all duration-700 ease-out flex flex-col overflow-hidden ${
           isEven ? 'items-start text-left' : 'items-start md:items-end text-left md:text-right'
         } ${
           hasUnlocked 
@@ -231,7 +231,7 @@ function JourneyCard({
           
           {/* 3% Mouse Spotlight (Only visible when unlocked & hovered) */}
           <motion.div
-            className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-0 mix-blend-screen opacity-0 group-hover:opacity-100 transition-opacity duration-500 will-change-transform"
+            className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-0 mix-blend-screen opacity-0 group-hover:opacity-100 transition-opacity duration-500 will-change-transform hidden md:block"
             style={{
               background: "radial-gradient(circle, rgba(0,217,255,0.03) 0%, transparent 50%)",
               x: springX,
@@ -248,7 +248,7 @@ function JourneyCard({
 
           <div className="relative z-10 w-full">
             {/* Numbering & Year */}
-            <div className={`flex items-center gap-3 mb-6 font-mono text-[10px] uppercase tracking-[0.2em] ${isEven ? 'justify-start' : 'justify-start md:justify-end'}`}>
+            <div className={`flex items-center gap-3 mb-4 md:mb-6 font-mono text-[10px] uppercase tracking-[0.2em] ${isEven ? 'justify-start' : 'justify-start md:justify-end'}`}>
               <span className="text-white/20 font-bold">
                 {String(index + 1).padStart(2, '0')}
               </span>
@@ -259,33 +259,33 @@ function JourneyCard({
             </div>
 
             {/* Icon Container with Rotating Ring */}
-            <div className={`relative w-[60px] h-[60px] flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isEven ? 'mx-0' : 'mx-0 md:ml-auto'}`}>
+            <div className={`relative w-[50px] h-[50px] md:w-[60px] md:h-[60px] flex items-center justify-center mb-5 md:mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1 ${isEven ? 'mx-0' : 'mx-0 md:ml-auto'}`}>
               
               {/* Floating slow breathe */}
-              <div className="absolute inset-0 bg-primary/5 rounded-full blur-md animate-[ambient-breathe_4s_ease-in-out_infinite]" />
+              <div className={`absolute inset-0 bg-primary/5 rounded-full blur-md ${isVisible ? 'animate-[ambient-breathe_4s_ease-in-out_infinite]' : ''}`} />
               
               {/* Rotating Segmented Ring */}
-              <svg className="absolute inset-0 w-full h-full text-primary/30 animate-[spin_10s_linear_infinite]" viewBox="0 0 100 100">
+              <svg className={`absolute inset-0 w-full h-full text-primary/30 ${isVisible ? 'animate-[spin_10s_linear_infinite]' : ''}`} viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="10 5 30 5" opacity="0.5" />
               </svg>
-              <svg className="absolute inset-0 w-full h-full text-primary/10 animate-[spin_15s_linear_infinite_reverse]" viewBox="0 0 100 100">
+              <svg className={`absolute inset-0 w-full h-full text-primary/10 ${isVisible ? 'animate-[spin_15s_linear_infinite_reverse]' : ''}`} viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="20 10" opacity="0.5" />
               </svg>
 
               <step.icon 
                 size={24} 
-                className="text-primary drop-shadow-[0_0_8px_rgba(0,217,255,0.4)] transition-all duration-300 relative z-10" 
+                className="text-primary drop-shadow-[0_0_8px_rgba(0,217,255,0.4)] transition-all duration-300 relative z-10 w-5 h-5 md:w-6 md:h-6" 
                 strokeWidth={1.5}
               />
             </div>
 
             {/* Title */}
-            <h3 className="font-heading text-2xl font-bold mb-3 text-white tracking-wide">
+            <h3 className="font-heading text-xl md:text-2xl font-bold mb-2 md:mb-3 text-white tracking-wide">
               {step.title}
             </h3>
             
             {/* Description with Animated Keywords */}
-            <p className="text-[15px] leading-relaxed font-sans text-secondary-foreground">
+            <p className="text-sm md:text-[15px] leading-relaxed font-sans text-secondary-foreground">
               <HighlightedText text={step.description} keywords={step.keywords} />
             </p>
           </div>
@@ -361,7 +361,7 @@ export default function Experience() {
           </div>
 
           {/* Cards */}
-          <div className="flex flex-col gap-24 md:gap-32 relative z-30 pb-32">
+          <div className="flex flex-col gap-16 md:gap-32 relative z-30 pb-32">
             {journeySteps.map((step, index) => (
               <JourneyCard 
                 key={index}

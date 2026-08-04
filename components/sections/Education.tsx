@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { m as motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence, useInView } from "framer-motion";
 import { GraduationCap, Award, BookOpen, Building, QrCode, Scan, ShieldCheck, RefreshCw } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, RoundedBox, Html, ContactShadows } from "@react-three/drei";
@@ -473,16 +473,19 @@ function BadgeModel({ isHovered, isFlipped, onFlip }: any) {
 }
 
 function ThreeBadge() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px 0px 200px 0px" });
   const [isHovered, setIsHovered] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
     <div 
+      ref={containerRef}
       className="relative w-full h-[600px] flex items-center justify-center cursor-pointer perspective-[1000px]"
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
     >
-      <Canvas camera={{ position: [0, 0, 7.5], fov: 40 }} className="z-10" dpr={[1, 2]}>
+      <Canvas frameloop={isInView ? 'always' : 'never'} camera={{ position: [0, 0, 7.5], fov: 40 }} className="z-10" dpr={[1, 2]}>
         
         {/* Cinematic AAA Lighting Setup */}
         <ambientLight intensity={0.5} />

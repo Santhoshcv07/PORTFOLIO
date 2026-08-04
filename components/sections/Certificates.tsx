@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { m as motion } from "framer-motion";
+import { m as motion, useInView } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Environment, ContactShadows, Cylinder, Torus, MeshReflectorMaterial, SpotLight } from "@react-three/drei";
 import * as THREE from "three";
@@ -634,6 +634,9 @@ export default function Certificates() {
     touchEndX.current = null;
   };
 
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(canvasContainerRef, { margin: "200px 0px 200px 0px" });
+
   const activeCert = certificates[displayIndex];
 
   return (
@@ -656,7 +659,7 @@ export default function Certificates() {
           </p>
         </div>
 
-        <div className="relative w-full h-[78vh] min-h-[650px] max-h-[1000px] flex items-center justify-center">
+        <div ref={canvasContainerRef} className="relative w-full h-[78vh] min-h-[650px] max-h-[1000px] flex items-center justify-center">
 
           <div
             className="absolute inset-0 z-20"
@@ -665,7 +668,7 @@ export default function Certificates() {
             onTouchEnd={handleTouchEnd}
           />
 
-          <Canvas camera={{ position: [0, 0, 10], fov: 50 }} className="z-10" dpr={[1, 2]}>
+          <Canvas frameloop={isInView ? 'always' : 'never'} camera={{ position: [0, 0, 10], fov: 50 }} className="z-10" dpr={[1, 2]}>
             <ThreeCarousel continuousIndex={continuousIndex} total={total} />
           </Canvas>
         </div>

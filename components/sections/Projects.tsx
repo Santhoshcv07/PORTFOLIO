@@ -50,6 +50,7 @@ function MacBookShowcase({
   index: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px 0px 200px 0px" });
   const [isHovered, setIsHovered] = useState(false);
 
   // 3D tilt for the entire card
@@ -129,7 +130,7 @@ function MacBookShowcase({
                 height: Math.random() * 3 + 1 + "px",
                 left: Math.random() * 100 + "%",
                 top: Math.random() * 100 + "%",
-                animation: `particle-drift ${15 + Math.random() * 15}s linear infinite`,
+                animation: isInView ? `particle-drift ${15 + Math.random() * 15}s linear infinite` : 'none',
                 animationDelay: `-${Math.random() * 15}s`,
                 opacity: Math.random() * 0.5 + 0.2,
                 boxShadow: "0 0 10px rgba(0,217,255,0.4)"
@@ -154,12 +155,12 @@ function MacBookShowcase({
       >
         {/* Animated Background AI Gradient */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent animate-[ambient-breathe_10s_ease-in-out_infinite]" />
+          <div className={`absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent ${isInView ? 'animate-[ambient-breathe_10s_ease-in-out_infinite]' : ''}`} />
         </div>
 
         {/* Hover Spotlight (8% opacity) */}
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform"
+          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform hidden md:block"
           style={{
             background: "radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%)",
             x: springMouseX,
@@ -172,17 +173,17 @@ function MacBookShowcase({
         />
 
         {/* Numbering & Badges */}
-        <div className="absolute top-8 left-8 right-8 flex justify-between items-center z-20 pointer-events-none">
-          <span className="font-heading text-4xl md:text-5xl font-light text-white/10 tracking-tighter">
+        <div className="absolute top-6 left-6 md:top-8 md:left-8 right-6 md:right-8 flex justify-between items-center z-20 pointer-events-none">
+          <span className="font-heading text-3xl md:text-5xl font-light text-white/10 tracking-tighter">
             #{String(index + 1).padStart(2, '0')}
           </span>
-          <div className="flex gap-3">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 text-[10px] uppercase tracking-[0.2em] text-white/70 backdrop-blur-md">
+          <div className="flex gap-2 md:gap-3">
+            <span className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 py-1.5 md:px-3 rounded-full bg-black/40 border border-white/10 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-white/70 backdrop-blur-md">
               <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shadow-[0_0_8px_rgba(0,217,255,0.8)]" />
               {project.featured ? "Featured" : "Production"}
             </span>
             {project.live && (
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 border border-success/20 text-[10px] uppercase tracking-[0.2em] text-success font-medium backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 md:gap-2 px-2.5 py-1.5 md:px-3 rounded-full bg-success/10 border border-success/20 text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-success font-medium backdrop-blur-md">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-success"></span>
@@ -196,7 +197,7 @@ function MacBookShowcase({
         <div
           className={`relative z-10 flex flex-col ${
             isReversed ? "lg:flex-row-reverse" : "lg:flex-row"
-          } items-center gap-12 lg:gap-20 mt-12`}
+          } items-center gap-8 lg:gap-20 mt-16 md:mt-12`}
         >
           {/* ─── MacBook Device ─── */}
           <div
@@ -221,7 +222,7 @@ function MacBookShowcase({
                 }}
               >
                 {/* Custom Cursor for MacBook hover */}
-                <div className="absolute inset-0 z-50 pointer-events-none opacity-0 group-hover/macbook:opacity-100 transition-opacity duration-300 overflow-hidden">
+                <div className="absolute inset-0 z-50 pointer-events-none opacity-0 group-hover/macbook:opacity-100 transition-opacity duration-300 overflow-hidden hidden md:block">
                   <motion.div 
                     className="absolute w-24 h-24 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/50 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-widest text-center shadow-[0_0_20px_rgba(0,217,255,0.4)]"
                     style={{
@@ -258,10 +259,10 @@ function MacBookShowcase({
                     />
 
                     {/* Fast Hover Reflection Sweep */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-0 group-hover/macbook:opacity-20 group-hover/macbook:animate-[button-sweep_1.5s_ease-out] pointer-events-none z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-0 group-hover/macbook:opacity-20 group-hover/macbook:animate-[button-sweep_1.5s_ease-out] pointer-events-none z-10 hidden md:block" />
 
                     {/* Continuous Slow Reflection */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[button-sweep_8s_linear_infinite] pointer-events-none z-10" />
+                    <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full ${isInView ? 'animate-[button-sweep_8s_linear_infinite]' : ''} pointer-events-none z-10 hidden md:block`} />
 
                     {/* Screen inner shadow for depth */}
                     <div className="absolute inset-0 pointer-events-none z-20 rounded-[8px] shadow-[inset_0_0_30px_rgba(0,0,0,0.6)]" />

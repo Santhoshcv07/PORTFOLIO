@@ -206,7 +206,7 @@ export default function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={(e) => handleMobileNavClick(e, link.href)}
-                    className={`text-lg font-medium transition-colors duration-300 flex items-center gap-4 ${
+                    className={`py-2 text-lg font-medium transition-colors duration-300 flex items-center gap-4 ${
                       activeSection === link.href.substring(1)
                         ? "text-primary"
                         : "text-white/80 hover:text-white"
