@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
-import { m as motion, useScroll, useTransform, useInView, Variants, useSpring, useMotionValue } from "framer-motion";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { m as motion, useScroll, useTransform, useInView, Variants } from "framer-motion";
 import { GraduationCap, Code2, BrainCircuit, Rocket, Trophy } from "lucide-react";
 
 const journeySteps = [
@@ -99,18 +99,15 @@ function JourneyCard({
     }
   }, [isCenter, hasUnlocked]);
 
-  // Spotlight logic
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 150, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 150, damping: 20 });
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardContainerRef.current) return;
-    const rect = cardContainerRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }, [mouseX, mouseY]);
+  // Pre-calculate random values for particles to maintain purity
+  const particles = useMemo(() => {
+    return Array.from({ length: 3 }).map((_, i) => ({
+      y: -50 - Math.random() * 50,
+      x: (Math.random() - 0.5) * 30,
+      duration: 2 + Math.random() * 2,
+      delay: i * 0.8
+    }));
+  }, []);
 
   // Unlock sequence choreography
   const cardVariants: Variants = {
@@ -189,20 +186,20 @@ function JourneyCard({
       {/* Floating Particles leaving active node */}
       {(hasUnlocked && isVisible) && (
         <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 top-0 pointer-events-none z-20">
-          {Array.from({ length: 3 }).map((_, i) => (
+          {particles.map((p, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 rounded-full bg-primary/40 shadow-[0_0_5px_rgba(0,217,255,0.5)]"
               initial={{ y: 0, x: 0, opacity: 1 }}
               animate={{ 
-                y: -50 - Math.random() * 50, 
-                x: (Math.random() - 0.5) * 30,
+                y: p.y, 
+                x: p.x,
                 opacity: 0 
               }}
               transition={{ 
-                duration: 2 + Math.random() * 2, 
+                duration: p.duration, 
                 repeat: Infinity,
-                delay: i * 0.8
+                delay: p.delay
               }}
             />
           ))}
@@ -219,7 +216,6 @@ function JourneyCard({
         initial="locked"
         animate={hasUnlocked ? "unlocked" : "locked"}
         style={{ y: yParallax, willChange: "transform, opacity" }}
-        onMouseMove={handleMouseMove}
       >
         <div className={`relative p-6 md:p-8 rounded-[20px] md:rounded-[24px] bg-[#111]/40 backdrop-blur-xl border transition-all duration-700 ease-out flex flex-col overflow-hidden ${
           isEven ? 'items-start text-left' : 'items-start md:items-end text-left md:text-right'
@@ -228,18 +224,6 @@ function JourneyCard({
             ? 'border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_40px_rgba(0,0,0,0.5)] hover:border-primary/30 hover:-translate-y-1 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_20px_50px_rgba(0,0,0,0.6),0_0_30px_rgba(0,217,255,0.05)] hover:bg-[#151515]/60' 
             : 'border-white/5 opacity-50'
         }`}>
-          
-          {/* 3% Mouse Spotlight (Only visible when unlocked & hovered) */}
-          <motion.div
-            className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-0 mix-blend-screen opacity-0 group-hover:opacity-100 transition-opacity duration-500 will-change-transform hidden md:block"
-            style={{
-              background: "radial-gradient(circle, rgba(0,217,255,0.03) 0%, transparent 50%)",
-              x: springX,
-              y: springY,
-              translateX: "-50%",
-              translateY: "-50%",
-            }}
-          />
 
           {/* Background Ambient Glow for Active Card */}
           {hasUnlocked && (

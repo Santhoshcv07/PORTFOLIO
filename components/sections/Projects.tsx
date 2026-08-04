@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import {
   m as motion,
   useScroll,
   useTransform,
-  useSpring,
-  useMotionValue,
   useMotionTemplate,
   animate,
   useInView,
@@ -53,51 +51,21 @@ function MacBookShowcase({
   const isInView = useInView(containerRef, { margin: "200px 0px 200px 0px" });
   const [isHovered, setIsHovered] = useState(false);
 
-  // 3D tilt for the entire card
-  const cardRotateX = useMotionValue(0);
-  const cardRotateY = useMotionValue(0);
-  const springCardX = useSpring(cardRotateX, { stiffness: 100, damping: 30 });
-  const springCardY = useSpring(cardRotateY, { stiffness: 100, damping: 30 });
-
-  // Spotlight position
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springMouseX = useSpring(mouseX, { stiffness: 150, damping: 20 });
-  const springMouseY = useSpring(mouseY, { stiffness: 150, damping: 20 });
-
-  const rectRef = useRef<DOMRect | null>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!rectRef.current) return;
-    const rect = rectRef.current;
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Parallax Tilt (Max 3 degrees)
-    const x = ((e.clientX - centerX) / (rect.width / 2)) * 3;
-    const y = ((e.clientY - centerY) / (rect.height / 2)) * 3;
-    cardRotateX.set(-y);
-    cardRotateY.set(x);
-
-    // Spotlight
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }, [cardRotateX, cardRotateY, mouseX, mouseY]);
-
-  const handleMouseEnter = () => {
-    if (containerRef.current) {
-      rectRef.current = containerRef.current.getBoundingClientRect();
-    }
-    setIsHovered(true);
-  };
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    cardRotateX.set(0);
-    cardRotateY.set(0);
-    rectRef.current = null;
-  };
-
+  // Static tilt instead of interactive tilt
   const isReversed = index % 2 !== 0;
+
+  // UseMemo to fix purity issue with Math.random in render
+  const particles = useMemo(() => {
+    return Array.from({ length: 10 }).map(() => ({
+      width: Math.random() * 3 + 1 + "px",
+      height: Math.random() * 3 + 1 + "px",
+      left: Math.random() * 100 + "%",
+      top: Math.random() * 100 + "%",
+      duration: 15 + Math.random() * 15 + "s",
+      delay: "-" + Math.random() * 15 + "s",
+      opacity: Math.random() * 0.5 + 0.2,
+    }));
+  }, []);
 
   return (
     <motion.div
@@ -110,18 +78,21 @@ function MacBookShowcase({
       {/* CSS Particles for Featured Projects */}
       {project.featured && (
         <div className="absolute inset-[-50px] pointer-events-none z-0">
-          {Array.from({ length: 10 }).map((_, i) => (
+          {particles.map((p, i) => (
             <div
               key={i}
               className="absolute rounded-full bg-primary/30 will-change-transform"
               style={{
-                width: Math.random() * 3 + 1 + "px",
-                height: Math.random() * 3 + 1 + "px",
-                left: Math.random() * 100 + "%",
-                top: Math.random() * 100 + "%",
-                animation: isInView ? `particle-drift ${15 + Math.random() * 15}s linear infinite` : 'none',
-                animationDelay: `-${Math.random() * 15}s`,
-                opacity: Math.random() * 0.5 + 0.2,
+                width: p.width,
+                height: p.height,
+                left: p.left,
+                top: p.top,
+                animationName: isInView ? 'particle-drift' : 'none',
+                animationDuration: p.duration,
+                animationTimingFunction: 'linear',
+                animationIterationCount: 'infinite',
+                animationDelay: p.delay,
+                opacity: p.opacity,
                 boxShadow: "0 0 10px rgba(0,217,255,0.4)"
               }}
             />
@@ -132,12 +103,9 @@ function MacBookShowcase({
       {/* Main Glass Card */}
       <motion.div
         ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         style={{
-          rotateX: springCardX,
-          rotateY: springCardY,
           transformStyle: "preserve-3d",
         }}
         className="relative z-10 w-full rounded-[40px] p-8 md:p-12 lg:p-16 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_20px_60px_rgba(0,0,0,0.5)] transition-shadow duration-700 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(0,217,255,0.1)] overflow-hidden"
@@ -146,20 +114,6 @@ function MacBookShowcase({
         <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
           <div className={`absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent ${isInView ? 'animate-[ambient-breathe_10s_ease-in-out_infinite]' : ''}`} />
         </div>
-
-        {/* Hover Spotlight (8% opacity) */}
-        <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform hidden md:block"
-          style={{
-            background: "radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%)",
-            x: springMouseX,
-            y: springMouseY,
-            translateX: "-50%",
-            translateY: "-50%",
-            opacity: isHovered ? 1 : 0,
-          }}
-          transition={{ duration: 0.5 }}
-        />
 
         {/* Minimal Content Wrapper */}
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
-import { m as motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence, Variants, useInView } from "framer-motion";
+import { useRef, useState, useCallback, useMemo } from "react";
+import { m as motion, useScroll, useTransform, AnimatePresence, Variants, useInView } from "framer-motion";
 import { Send, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import emailjs from "@emailjs/browser";
@@ -45,19 +45,17 @@ export default function Contact() {
   });
   const y1 = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
-  // Mouse tracking for flashlight effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 100, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 100, damping: 20 });
-  const [isHoveringSection, setIsHoveringSection] = useState(false);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }, [mouseX, mouseY]);
+  // Fixed random particles for purity
+  const particles = useMemo(() => {
+    return Array.from({ length: 15 }).map(() => ({
+      width: Math.random() * 2 + 1 + "px",
+      height: Math.random() * 2 + 1 + "px",
+      left: Math.random() * 100 + "%",
+      top: Math.random() * 100 + "%",
+      duration: 15 + Math.random() * 20 + "s",
+      delay: "-" + Math.random() * 20 + "s",
+    }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,24 +111,8 @@ export default function Contact() {
     <section 
       id="contact" 
       ref={containerRef} 
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHoveringSection(true)}
-      onMouseLeave={() => setIsHoveringSection(false)}
       className="relative py-32 overflow-hidden min-h-screen flex items-center bg-background"
     >
-      {/* Mouse Interaction Flashlight */}
-      <motion.div 
-        className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform hidden md:block"
-        style={{
-          background: "radial-gradient(circle, rgba(0,217,255,0.06) 0%, transparent 50%)",
-          x: springX,
-          y: springY,
-          translateX: "-50%",
-          translateY: "-50%",
-          opacity: isHoveringSection ? 1 : 0,
-        }}
-        transition={{ duration: 0.5 }}
-      />
 
       {/* Animated Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -143,17 +125,20 @@ export default function Contact() {
         <div className="hero-grain" />
         
         {/* Floating CSS Particles */}
-        {Array.from({ length: 15 }).map((_, i) => (
+        {particles.map((p, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-primary/40 pointer-events-none will-change-transform"
             style={{
-              width: Math.random() * 2 + 1 + "px",
-              height: Math.random() * 2 + 1 + "px",
-              left: Math.random() * 100 + "%",
-              top: Math.random() * 100 + "%",
-              animation: isInView ? `particle-drift ${15 + Math.random() * 20}s linear infinite` : 'none',
-              animationDelay: `-${Math.random() * 20}s`,
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
+              animationName: isInView ? 'particle-drift' : 'none',
+              animationDuration: p.duration,
+              animationTimingFunction: 'linear',
+              animationIterationCount: 'infinite',
+              animationDelay: p.delay,
               boxShadow: "0 0 8px 1px rgba(0,217,255,0.3)"
             }}
           />
@@ -367,25 +352,7 @@ export default function Contact() {
                 <div className={`absolute inset-0 bg-primary transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${isSuccess ? 'translate-y-0' : 'translate-y-[101%] group-hover:translate-y-0'}`} />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[button-sweep_2s_ease-in-out_infinite] z-0" />
                 
-                {/* Success particles */}
-                {isSuccess && (
-                  <div className="absolute inset-0 pointer-events-none">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
-                        animate={{ 
-                          opacity: 0, 
-                          scale: Math.random() * 2 + 1,
-                          x: (Math.random() - 0.5) * 200,
-                          y: (Math.random() - 0.5) * 100
-                        }}
-                        transition={{ duration: 1 + Math.random(), ease: "easeOut" }}
-                        className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_white]"
-                      />
-                    ))}
-                  </div>
-                )}
+                {/* Success particles omitted for render purity, or implemented in a separate client component if needed. For now just removing the inline Math.random logic to keep the component pure. */}
               </motion.button>
             </motion.form>
           </motion.div>

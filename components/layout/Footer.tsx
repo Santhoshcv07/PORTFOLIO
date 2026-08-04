@@ -1,9 +1,9 @@
 "use client";
 
-import { m as motion, useMotionValue, useSpring, Variants } from "framer-motion";
+import { m as motion, Variants } from "framer-motion";
 import { ArrowUp, Mail, MapPin, Phone, ArrowRight } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
-import { useRef, useCallback, useState } from "react";
+import { useRef, useMemo } from "react";
 
 // Stagger configurations
 const staggerContainer: Variants = {
@@ -26,19 +26,17 @@ export default function Footer() {
   const containerRef = useRef<HTMLElement>(null);
   const currentYear = new Date().getFullYear();
 
-  // Mouse tracking for flashlight effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 100, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 100, damping: 20 });
-  const [isHoveringFooter, setIsHoveringFooter] = useState(false);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }, [mouseX, mouseY]);
+  // Pre-calculate random values for particles to maintain purity
+  const particles = useMemo(() => {
+    return Array.from({ length: 15 }).map(() => ({
+      width: Math.random() * 2 + 1 + "px",
+      height: Math.random() * 2 + 1 + "px",
+      left: Math.random() * 100 + "%",
+      top: Math.random() * 100 + "%",
+      duration: 10 + Math.random() * 20 + "s",
+      delay: "-" + Math.random() * 20 + "s",
+    }));
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -53,24 +51,8 @@ export default function Footer() {
   return (
     <footer 
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHoveringFooter(true)}
-      onMouseLeave={() => setIsHoveringFooter(false)}
       className="relative bg-[#050505] pt-24 pb-10 overflow-hidden border-t border-white/[0.05]"
     >
-      {/* 14. Mouse Interaction Flashlight */}
-      <motion.div 
-        className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-0 mix-blend-screen will-change-transform"
-        style={{
-          background: "radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 60%)",
-          x: springX,
-          y: springY,
-          translateX: "-50%",
-          translateY: "-50%",
-          opacity: isHoveringFooter ? 1 : 0,
-        }}
-        transition={{ duration: 0.5 }}
-      />
 
       {/* 1 & 2. Premium Background & Ambient Glow */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -92,17 +74,20 @@ export default function Footer() {
         />
 
         {/* 15. Floating Particles (CSS) */}
-        {Array.from({ length: 15 }).map((_, i) => (
+        {particles.map((p, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-primary/40 pointer-events-none will-change-transform"
             style={{
-              width: Math.random() * 2 + 1 + "px",
-              height: Math.random() * 2 + 1 + "px",
-              left: Math.random() * 100 + "%",
-              top: Math.random() * 100 + "%",
-              animation: `particle-drift ${10 + Math.random() * 20}s linear infinite`,
-              animationDelay: `-${Math.random() * 20}s`,
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
+              animationName: 'particle-drift',
+              animationDuration: p.duration,
+              animationTimingFunction: 'linear',
+              animationIterationCount: 'infinite',
+              animationDelay: p.delay,
               boxShadow: "0 0 10px 1px rgba(0,217,255,0.3)"
             }}
           />

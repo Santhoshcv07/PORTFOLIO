@@ -8,7 +8,7 @@ import Image from "next/image";
 import heroImg from "@/public/assets/images/portrait_new.png";
 
 // ─── Canvas Particle System ─────────────────────────────────────────
-function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, mouseRef: React.RefObject<{x: number, y: number}>) {
+function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -111,21 +111,9 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
       }
 
       // Draw particles using pre-rendered sprite
-      const mx = mouseRef.current?.x ?? 0;
-      const my = mouseRef.current?.y ?? 0;
-
       for (const p of particles) {
         p.pulse += p.pulseSpeed;
         const currentOpacity = p.baseOpacity * (0.6 + 0.4 * Math.sin(p.pulse));
-        
-        // Mouse repulsion
-        const dmx = p.x - mx;
-        const dmy = p.y - my;
-        const mouseDist = Math.sqrt(dmx * dmx + dmy * dmy);
-        if (mouseDist < 100 && mouseDist > 0) {
-          p.x += (dmx / mouseDist) * 0.3;
-          p.y += (dmy / mouseDist) * 0.3;
-        }
 
         p.x += p.speedX;
         p.y += p.speedY;
@@ -152,7 +140,7 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
       window.removeEventListener("resize", resize);
       observer.disconnect();
     };
-  }, [canvasRef, mouseRef]);
+  }, [canvasRef]);
 }
 
 // ─── Rotating Subtitle Hook ─────────────────────────────────────────
@@ -196,9 +184,6 @@ const stagger = {
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rawMouse = useRef({ x: 0, y: 0 });
-  const rawMouseX = useMotionValue(0);
-  const rawMouseY = useMotionValue(0);
   const currentSubtitle = useRotatingText(4000);
 
   const { scrollYProgress } = useScroll({
@@ -209,48 +194,8 @@ export default function Hero() {
   const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const { innerWidth, innerHeight } = window;
-    const x = (e.clientX / innerWidth - 0.5) * 20;
-    const y = (e.clientY / innerHeight - 0.5) * 20;
-    rawMouseX.set(x);
-    rawMouseY.set(y);
-    rawMouse.current = { x: e.clientX, y: e.clientY };
-  }, [rawMouseX, rawMouseY]);
-
-  useEffect(() => {
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [handleMouseMove]);
-
   // Canvas particles
-  useParticleCanvas(canvasRef, rawMouse);
-
-  const mouseX = useSpring(rawMouseX, { stiffness: 50, damping: 10 });
-  const mouseY = useSpring(rawMouseY, { stiffness: 50, damping: 10 });
-
-  // Parallax for different layers
-  const textX = useTransform(mouseX, (x) => x * 0.5);
-  const textY = useTransform(mouseY, (y) => y * 0.5);
-  const portraitX = useTransform(mouseX, (x) => -x * 0.4);
-  const portraitY = useTransform(mouseY, (y) => -y * 0.4);
-  const ringX = useTransform(mouseX, (x) => x * 0.2);
-  const ringY = useTransform(mouseY, (y) => y * 0.2);
-  const particleX = useTransform(mouseX, (x) => x * 0.15);
-  const particleY = useTransform(mouseY, (y) => y * 0.15);
-
-  // Cursor glow position
-  const cursorGlowX = useSpring(0, { stiffness: 80, damping: 15 });
-  const cursorGlowY = useSpring(0, { stiffness: 80, damping: 15 });
-
-  useEffect(() => {
-    const updateGlow = (e: MouseEvent) => {
-      cursorGlowX.set(e.clientX);
-      cursorGlowY.set(e.clientY);
-    };
-    window.addEventListener("mousemove", updateGlow);
-    return () => window.removeEventListener("mousemove", updateGlow);
-  }, [cursorGlowX, cursorGlowY]);
+  useParticleCanvas(canvasRef);
 
   return (
     <section
@@ -279,7 +224,6 @@ export default function Hero() {
       {/* ═══ CANVAS PARTICLES + NEURAL LINES (Items #1, #10) ═══ */}
       <motion.div
         className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ x: particleX, y: particleY }}
       >
         <canvas
           ref={canvasRef}
@@ -306,7 +250,7 @@ export default function Hero() {
       {/* ═══ ORBIT RINGS + RADAR (Items #2, #10) ═══ */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
-        style={{ x: ringX, y: ringY, willChange: "transform" }}
+        style={{ willChange: "transform" }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, delay: stagger.radar, ease: "easeOut" }}
@@ -330,7 +274,7 @@ export default function Hero() {
       {/* ═══ HUGE BACKGROUND TEXT (Item #5) ═══ */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-10 flex flex-col items-center justify-center"
-        style={{ y: y1, x: textX, opacity, willChange: "transform, opacity" }}
+        style={{ y: y1, opacity, willChange: "transform, opacity" }}
       >
         <motion.h1
           className="font-hero text-[120px] sm:text-[180px] md:text-[220px] lg:text-[280px] leading-none tracking-tighter font-bold whitespace-nowrap select-none"
@@ -354,7 +298,7 @@ export default function Hero() {
       {/* ═══ CENTER PORTRAIT (Items #3, #4, #9, #16, #23) ═══ */}
       <motion.div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex justify-center items-end"
-        style={{ x: portraitX, y: portraitY, willChange: "transform" }}
+        style={{ willChange: "transform" }}
       >
         <motion.div
           initial={{ y: 100, opacity: 0 }}

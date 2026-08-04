@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { m as motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { m as motion, useTransform, useScroll } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars, PointMaterial, Points } from "@react-three/drei";
 import * as THREE from "three";
@@ -43,41 +43,20 @@ function FloatingParticles() {
 }
 
 export default function Background() {
-  const rawMouseX = useMotionValue(0);
-  const rawMouseY = useMotionValue(0);
-
-  const mouseX = useSpring(rawMouseX, { stiffness: 50, damping: 20 });
-  const mouseY = useSpring(rawMouseY, { stiffness: 50, damping: 20 });
-
-  useEffect(() => {
-    let animationFrameId: number;
-    const handleMouseMove = (e: MouseEvent) => {
-      // Throttle slightly with requestAnimationFrame if desired, but framer-motion handles it well.
-      rawMouseX.set((e.clientX / window.innerWidth) * 2 - 1);
-      rawMouseY.set(-(e.clientY / window.innerHeight) * 2 + 1);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [rawMouseX, rawMouseY]);
-
   // Scroll Parallax
   const { scrollYProgress } = useScroll();
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
-  // Derived transforms
-  const gridX = useTransform(mouseX, (x) => x * -10);
-  const gridY = useTransform([mouseY, parallaxY], ([m, p]: any) => m * 10 + p);
-  const glow1X = useTransform(mouseX, (x) => x * 20);
-  const glow1Y = useTransform([mouseY, parallaxY], ([m, p]: any) => m * -20 + p * 0.5);
-  const glow2X = useTransform(mouseX, (x) => x * -30);
-  const glow2Y = useTransform([mouseY, parallaxY], ([m, p]: any) => m * 30 + p * 0.8);
+  // Derived transforms for grid and glows (scroll only)
+  const gridY = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const glow1Y = useTransform(scrollYProgress, [0, 1], [0, -25]);
+  const glow2Y = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden bg-background pointer-events-none">
       {/* 3D Particles & Stars */}
       <div className="absolute inset-0 opacity-50">
-        <Canvas camera={{ position: [0, 0, 5] }}>
+        <Canvas camera={{ position: [0, 0, 5] }} frameloop="always">
           <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
           <FloatingParticles />
         </Canvas>
@@ -92,7 +71,6 @@ export default function Background() {
             linear-gradient(to bottom, #ffffff 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
-          x: gridX,
           y: gridY,
         }}
       />
@@ -111,7 +89,6 @@ export default function Background() {
         className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full opacity-20 blur-[80px] will-change-transform"
         style={{
           background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)',
-          x: glow1X,
           y: glow1Y,
           transform: "translateZ(0)"
         }}
@@ -120,7 +97,6 @@ export default function Background() {
         className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full opacity-10 blur-[100px] will-change-transform"
         style={{
           background: 'radial-gradient(circle, var(--color-accent) 0%, transparent 70%)',
-          x: glow2X,
           y: glow2Y,
           transform: "translateZ(0)"
         }}

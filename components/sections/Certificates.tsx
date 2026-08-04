@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { m as motion, useInView } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox, Environment, ContactShadows, Cylinder, Torus, MeshReflectorMaterial, SpotLight } from "@react-three/drei";
+import { RoundedBox, Environment, ContactShadows, Cylinder, Torus } from "@react-three/drei";
 import * as THREE from "three";
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 
@@ -200,16 +200,12 @@ function Pedestal() {
     <group position={[0, -1.75, 0]}>
 
       {/* 
-        LAYER 1 (Bottom Base - Taller and narrower) 
+        LAYER 1 (Bottom Base) 
       */}
       <group position={[0, -0.7, 0]}>
         <Cylinder args={[2.7, 2.9, 0.6, 64]}>
           <meshStandardMaterial color="#050505" metalness={0.9} roughness={0.4} />
         </Cylinder>
-        {/* Beveled glowing edge at the top of Layer 1 */}
-        <Torus args={[2.7, 0.015, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.3, 0]}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.5} transparent opacity={0.5} />
-        </Torus>
       </group>
 
       {/* 
@@ -219,34 +215,16 @@ function Pedestal() {
         <Cylinder args={[2.45, 2.6, 0.4, 64]}>
           <meshStandardMaterial color="#0a0a0a" metalness={0.8} roughness={0.2} />
         </Cylinder>
-        {/* Beveled glowing edge at the top of Layer 2 */}
-        <Torus args={[2.45, 0.015, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.2, 0]}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.8} transparent opacity={0.8} />
-        </Torus>
-        {/* Ambient glow between layers */}
-        <pointLight position={[0, -0.2, 0]} intensity={1.5} color="#00E5FF" distance={3} />
       </group>
 
       {/* 
         LAYER 3 (Top Glass Layer) 
       */}
       <group position={[0, 0.05, 0]}>
-        {/* Top reflection plane perfectly aligned with the top surface */}
+        {/* Top surface - simplified from Reflector */}
         <mesh position={[0, 0.101, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[2.2, 64]} />
-          <MeshReflectorMaterial
-            blur={[300, 100]}
-            resolution={512}
-            mixBlur={1.5}
-            mixStrength={15}
-            roughness={0.15}
-            depthScale={1}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.4}
-            color="#050505"
-            metalness={0.9}
-            mirror={1}
-          />
+          <meshStandardMaterial color="#050505" metalness={0.9} roughness={0.15} />
         </mesh>
 
         {/* Top smoked glass body */}
@@ -262,19 +240,16 @@ function Pedestal() {
           />
         </Cylinder>
 
-        {/* Polished metal rim for top layer */}
+        {/* Polished metal rim */}
         <Torus args={[2.2, 0.03, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.1, 0]}>
           <meshStandardMaterial color="#888888" metalness={1} roughness={0.05} />
         </Torus>
 
-        {/* Subtle inner cyan edge glow for top layer */}
-        <Torus args={[2.16, 0.01, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.1, 0]}>
-          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={1} />
+        {/* Single soft ambient cyan edge glow */}
+        <Torus args={[2.16, 0.015, 16, 100]} rotation-x={Math.PI / 2} position={[0, 0.1, 0]}>
+          <meshStandardMaterial color="#00E5FF" emissive="#00E5FF" emissiveIntensity={0.6} transparent opacity={0.6} />
         </Torus>
       </group>
-
-      {/* Subtle ambient reflection light on the podium surface */}
-      <pointLight position={[0, 0.5, 0]} intensity={0.4} color="#00E5FF" distance={3} />
 
     </group>
   );
@@ -343,9 +318,9 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
     <>
       <CameraFit />
 
-      <ambientLight intensity={0.2} color="#4488ff" />
+      <ambientLight intensity={0.5} color="#ffffff" />
       {/* Soft main key light for overall illumination */}
-      <spotLight position={[0, 6, 8]} intensity={1.5} penumbra={0.6} color="#ffffff" castShadow />
+      <directionalLight position={[0, 6, 8]} intensity={1.5} color="#ffffff" />
 
       <Environment preset="night" />
 

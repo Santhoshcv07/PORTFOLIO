@@ -5,8 +5,6 @@ import {
   m as motion,
   useScroll,
   useTransform,
-  useSpring,
-  useMotionValue,
   useMotionTemplate,
   animate,
   useInView,
@@ -23,46 +21,12 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const springRotateX = useSpring(rotateX, { stiffness: 180, damping: 22 });
-  const springRotateY = useSpring(rotateY, { stiffness: 180, damping: 22 });
-
-  const reflectionX = useMotionValue(-100);
-  const springReflectionX = useSpring(reflectionX, {
-    stiffness: 80,
-    damping: 25,
-  });
-
-  const glowOpacity = useSpring(0, { stiffness: 120, damping: 20 });
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!cardRef.current) return;
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const x = (e.clientX - centerX) / (rect.width / 2);
-      const y = (e.clientY - centerY) / (rect.height / 2);
-
-      rotateX.set(-y * 4);
-      rotateY.set(x * 5);
-      reflectionX.set(((e.clientX - rect.left) / rect.width) * 200 - 50);
-    },
-    [rotateX, rotateY, reflectionX]
-  );
-
   const handleMouseEnter = () => {
     setIsHovered(true);
-    glowOpacity.set(1);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    rotateX.set(0);
-    rotateY.set(0);
-    reflectionX.set(-100);
-    glowOpacity.set(0);
   };
 
   return (
@@ -83,22 +47,19 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         style={{
           background:
             "radial-gradient(ellipse at center, rgba(0,217,255,0.03) 0%, transparent 70%)",
-          opacity: glowOpacity,
+          opacity: isHovered ? 1 : 0,
         }}
       />
 
       <div
         ref={cardRef}
         className="relative"
-        onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{ perspective: 1000 }}
       >
         <motion.div
           style={{
-            rotateX: springRotateX,
-            rotateY: springRotateY,
             transformStyle: "preserve-3d",
           }}
         >
@@ -143,13 +104,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                     loading="lazy"
                   />
 
-                  {/* Reflection sweep */}
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none z-10"
-                    style={{
-                      background: useMotionTemplate`linear-gradient(105deg, transparent ${springReflectionX}%, rgba(255,255,255,0.05) ${springReflectionX}%, transparent ${springReflectionX}%)`,
-                    }}
-                  />
+                  {/* Removed Reflection sweep */}
 
                   {/* Top light */}
                   <div
