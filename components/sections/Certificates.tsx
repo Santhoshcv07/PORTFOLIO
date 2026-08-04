@@ -47,7 +47,7 @@ const certificates = [
     title: "No-code Machine Learning and Generative AI on AWS",
     issuer: "AWS Training & Certification",
     date: "April 15, 2026",
-    image: "/certificates/aws.png",
+    image: "/certificates/AWS.png",
     link: "https://drive.google.com/file/d/1fPQbG948qvS2srMBoThuHhrNp_M-pMMI/view?usp=sharing"
   }
 ];
