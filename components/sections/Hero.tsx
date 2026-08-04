@@ -67,10 +67,8 @@ function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>,
     interface Particle {
       x: number; y: number; size: number; speedX: number; speedY: number; baseOpacity: number; pulse: number; pulseSpeed: number;
     }
-    const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 15 : 40;
     const particles: Particle[] = [];
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < 40; i++) {
       particles.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
@@ -324,7 +322,7 @@ export default function Hero() {
 
         {/* Scanning Ring (Item #2) */}
         <div
-          className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full border border-primary/30 pointer-events-none hidden md:block"
+          className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full border border-primary/30 pointer-events-none"
           style={{ animation: "scan-ring 4s ease-out infinite" }}
         />
       </motion.div>
@@ -362,7 +360,7 @@ export default function Hero() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1.5, delay: stagger.portrait, ease: "easeOut" }}
-          className="relative w-[90vw] max-w-[350px] md:w-[450px] lg:w-[500px] h-[400px] md:h-[600px] lg:h-[700px]"
+          className="relative w-[350px] md:w-[450px] lg:w-[500px] h-[450px] md:h-[600px] lg:h-[700px]"
           style={{ animation: "float-portrait 8s ease-in-out infinite" }}
         >
           {/* Very subtle ambient glow — no visible ring */}
@@ -429,7 +427,7 @@ export default function Hero() {
       </motion.div>
 
       {/* ═══ UI OVERLAY LAYERS ═══ */}
-      <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-6 md:px-10 lg:px-16 flex flex-col md:flex-row justify-between items-end md:items-center z-30 pointer-events-none pt-[80px] pb-[40px]">
+      <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-10 md:px-10 lg:px-16 flex flex-col md:flex-row justify-between items-end md:items-center z-30 pointer-events-none pt-[80px] pb-[40px]">
 
         {/* ── LEFT COLUMN ── */}
         <div className="relative flex flex-col h-full justify-between w-full md:w-1/3 pb-10 md:pb-12 pointer-events-auto items-start">

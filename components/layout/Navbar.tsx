@@ -1,19 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { m as motion, useScroll, useSpring, AnimatePresence, useMotionValueEvent } from "framer-motion";
+import { m as motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import { ArrowDown, Menu, X } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import Link from "next/link";
 import { useLenis } from "lenis/react";
 
 const navLinks = [
-  { name: "Home", href: "#home" },
   { name: "About", href: "#about" },
-  { name: "Tech Stack", href: "#tech-stack" },
-  { name: "Experience", href: "#experience" },
-  { name: "Education", href: "#education" },
   { name: "Projects", href: "#projects" },
+  { name: "Skills", href: "#tech-stack" },
+  { name: "Experience", href: "#experience" },
   { name: "Certificates", href: "#certificates" },
   { name: "Contact", href: "#contact" },
 ];
@@ -39,36 +37,22 @@ export default function Navbar() {
     }
   };
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // latest is a value from 0 to 1.
-    // However, for active section, it's better to just keep the IntersectionObserver approach
-    // or throttle the scroll event.
-  });
-
   useEffect(() => {
-    let ticking = false;
-
     const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 50);
-          
-          const sections = document.querySelectorAll("section[id]");
-          let current = "";
-          sections.forEach((section) => {
-            const sectionTop = (section as HTMLElement).offsetTop;
-            if (window.scrollY >= sectionTop - 200) {
-              current = section.getAttribute("id") || "";
-            }
-          });
-          setActiveSection(current);
-          ticking = false;
-        });
-        ticking = true;
-      }
+      setScrolled(window.scrollY > 50);
+      
+      const sections = document.querySelectorAll("section[id]");
+      let current = "";
+      sections.forEach((section) => {
+        const sectionTop = (section as HTMLElement).offsetTop;
+        if (window.scrollY >= sectionTop - 200) {
+          current = section.getAttribute("id") || "";
+        }
+      });
+      setActiveSection(current);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

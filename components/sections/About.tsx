@@ -45,7 +45,7 @@ export default function About() {
           {/* Left Column */}
           <div className="lg:col-span-5 flex flex-col gap-10">
             <motion.div 
-              className="relative w-full h-[400px] md:h-[500px] rounded-[24px] overflow-hidden glass p-4 group"
+              className="relative w-full h-[500px] rounded-[24px] overflow-hidden glass p-4 group"
               style={{ y: y1, willChange: "transform" }}
               initial={{ opacity: 0, y: 30, scale: 0.98 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -109,7 +109,7 @@ export default function About() {
             </motion.div>
 
             {/* Achievement Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {cards.map((card, idx) => (
                 <motion.div 
                   key={card.title}
