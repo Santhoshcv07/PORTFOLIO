@@ -74,6 +74,7 @@ function MacBookShowcase({
       viewport={{ once: true, margin: "-100px" }}
       transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
       className="relative group perspective-[2000px]"
+      style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
     >
       {/* CSS Particles for Featured Projects */}
       {project.featured && (
@@ -110,9 +111,8 @@ function MacBookShowcase({
         }}
         className="relative z-10 w-full rounded-[40px] p-8 md:p-12 lg:p-16 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_20px_60px_rgba(0,0,0,0.5)] transition-shadow duration-700 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(0,217,255,0.1)] overflow-hidden"
       >
-        {/* Animated Background AI Gradient */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
-          <div className={`absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent ${isInView ? 'animate-[ambient-breathe_10s_ease-in-out_infinite]' : ''}`} />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
         </div>
 
         {/* Minimal Content Wrapper */}
@@ -172,7 +172,7 @@ function MacBookShowcase({
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-0 group-hover/macbook:opacity-20 group-hover/macbook:animate-[button-sweep_1.5s_ease-out] pointer-events-none z-10 hidden md:block" />
 
                     {/* Continuous Slow Reflection */}
-                    <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full ${isInView ? 'animate-[button-sweep_8s_linear_infinite]' : ''} pointer-events-none z-10 hidden md:block`} />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full pointer-events-none z-10 hidden md:block" />
 
                     {/* Soft Cyan Glow on Hover */}
                     <div className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-300 ease-out opacity-0 group-hover/macbook:opacity-100 shadow-[inset_0_0_40px_rgba(0,217,255,0.15)]" />
@@ -280,13 +280,6 @@ export default function Projects() {
   const featuredProjects = getFeaturedProjects();
   const totalProjects = getAllProjects().length;
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const titleY = useTransform(scrollYProgress, [0, 1], [40, -40]);
-
   return (
     <section
       id="projects"
@@ -312,7 +305,6 @@ export default function Projects() {
         {/* ─── Section Header ─── */}
         <motion.div
           className="flex flex-col items-center text-center mb-28 md:mb-36 will-change-transform"
-          style={{ y: titleY }}
         >
           <motion.span
             className="text-primary/60 font-mono text-xs tracking-[0.3em] mb-5 block"

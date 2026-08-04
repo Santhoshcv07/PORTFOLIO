@@ -56,10 +56,10 @@ export default function Footer() {
 
       {/* 1 & 2. Premium Background & Ambient Glow */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Breathing glow */}
+        {/* Ambient glow */}
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 blur-[150px] rounded-full pointer-events-none will-change-transform" 
-          style={{ animation: "ambient-breathe 15s ease-in-out infinite" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 blur-[150px] rounded-full pointer-events-none" 
+          style={{ transform: "translateZ(0)" }}
         />
         
         {/* Background Grid */}
@@ -194,15 +194,13 @@ export default function Footer() {
         <div className="relative w-full h-[1px] mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           <motion.div 
-            className="absolute top-1/2 -translate-y-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_#00d9ff]"
-            animate={{ left: ["-10%", "110%"] }}
+            className="absolute top-1/2 -translate-y-1/2 w-full h-[1px]"
+            animate={{ x: ["-100%", "100%"] }}
             transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div 
-            className="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#00d9ff]"
-            animate={{ left: ["-10%", "110%"] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          />
+          >
+             <div className="absolute left-0 w-32 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_#00d9ff]" />
+             <div className="absolute left-16 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#00d9ff]" />
+          </motion.div>
         </div>
 
         {/* Bottom Bar */}
@@ -223,8 +221,8 @@ export default function Footer() {
             {mottoChars.map((char, index) => (
               <motion.span
                 key={index}
-                initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
-                whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.02 }}
                 className={char === " " ? "mr-1" : "hover:text-primary hover:drop-shadow-[0_0_8px_rgba(0,217,255,0.8)] transition-all duration-300"}

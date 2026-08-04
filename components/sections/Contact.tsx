@@ -38,13 +38,6 @@ export default function Contact() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Scroll parallax for left content
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-  const y1 = useTransform(scrollYProgress, [0, 1], [50, -50]);
-
   // Fixed random particles for purity
   const particles = useMemo(() => {
     return Array.from({ length: 15 }).map(() => ({
@@ -146,8 +139,8 @@ export default function Contact() {
 
         {/* Ambient Glow */}
         <div 
-          className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[80px] rounded-full pointer-events-none will-change-transform" 
-          style={{ animation: isInView ? "ambient-breathe 10s ease-in-out infinite" : 'none', transform: "translateZ(0)" }}
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[80px] rounded-full pointer-events-none" 
+          style={{ transform: "translateZ(0)" }}
         />
       </div>
 
@@ -156,8 +149,7 @@ export default function Contact() {
 
           {/* Left - Content */}
           <motion.div
-            className="flex flex-col gap-8 will-change-transform"
-            style={{ y: y1 }}
+            className="flex flex-col gap-8"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-100px" }}
@@ -184,7 +176,7 @@ export default function Contact() {
               <motion.div variants={fadeUp} className="flex items-center gap-3 mb-10 mt-6 px-4 py-2 rounded-full border border-success/30 bg-success/5 w-fit shadow-[inset_0_0_10px_rgba(0,255,136,0.05)] hover:bg-success/10 transition-colors duration-300">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" style={{ animation: "ambient-breathe 2s ease-in-out infinite" }}></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
                 </span>
                 <span className="text-xs font-medium text-success tracking-wide uppercase">Available for new opportunities</span>
               </motion.div>
@@ -350,7 +342,7 @@ export default function Contact() {
                 
                 {/* Background animations */}
                 <div className={`absolute inset-0 bg-primary transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] z-0 ${isSuccess ? 'translate-y-0' : 'translate-y-[101%] group-hover:translate-y-0'}`} />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[button-sweep_2s_ease-in-out_infinite] z-0" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-white/20 to-primary/0 -translate-x-full group-hover:translate-x-[100%] transition-transform duration-1000 ease-out z-0 pointer-events-none" />
                 
                 {/* Success particles omitted for render purity, or implemented in a separate client component if needed. For now just removing the inline Math.random logic to keep the component pure. */}
               </motion.button>

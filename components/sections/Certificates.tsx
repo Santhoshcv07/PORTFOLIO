@@ -334,7 +334,7 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
         </group>
       </group>
 
-      <ContactShadows position={[0, -2.8, 0]} opacity={0.4} scale={20} blur={3} far={3} color="#000000" />
+      <ContactShadows position={[0, -2.8, 0]} opacity={0.4} scale={20} blur={3} far={3} color="#000000" frames={1} resolution={256} />
     </>
   );
 }
