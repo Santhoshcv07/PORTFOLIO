@@ -147,18 +147,25 @@ export default function Navbar() {
             <span>Resume</span>
             <ArrowDown size={14} className="group-hover:translate-y-1 transition-transform duration-300" />
           </a>
-
-          {/* Hamburger Button (Mobile Only) */}
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden flex items-center justify-center w-11 h-11 rounded-full border border-white/10 bg-white/5 text-white hover:text-primary hover:border-primary/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
-            aria-label="Open Navigation Menu"
-            aria-expanded={isMobileMenuOpen}
-          >
-            <Menu size={20} />
-          </button>
         </div>
       </div>
+
+      {/* Floating Hamburger Button (Mobile Only) */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="lg:hidden fixed z-[100] flex items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-white hover:text-primary hover:border-primary/50 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.3)] focus:outline-none focus:ring-2 focus:ring-primary/50"
+        style={{
+          top: "20px",
+          right: "20px",
+          width: scrolled ? "56px" : "64px",
+          height: scrolled ? "56px" : "64px",
+        }}
+        aria-label="Open Navigation Menu"
+        aria-expanded={isMobileMenuOpen}
+      >
+        <Menu size={scrolled ? 24 : 28} className="transition-all duration-300" />
+      </button>
+      
       
       {/* Mobile Navigation Drawer */}
       <AnimatePresence>
