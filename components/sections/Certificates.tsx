@@ -99,7 +99,7 @@ function useCertificateTexture(imageUrl: string) {
   return texture;
 }
 
-function CertificateMesh({ index, continuousIndex, total }: { index: number, continuousIndex: number, total: number }) {
+function CertificateMesh({ index, continuousIndex, total, isMobile }: { index: number, continuousIndex: number, total: number, isMobile?: boolean }) {
   const meshRef = useRef<THREE.Group>(null);
   const cert = certificates[index];
   const tex = useCertificateTexture(cert.image);
@@ -140,7 +140,7 @@ function CertificateMesh({ index, continuousIndex, total }: { index: number, con
     meshRef.current.scale.setScalar(targetScale);
 
     const depthFactor = Math.cos(offset * sliceAngle);
-    const targetOpacity = offset === 0 ? 1.0 : Math.max(0.1, (depthFactor + 1) / 2);
+    const targetOpacity = offset === 0 ? 1.0 : (isMobile ? 0 : Math.max(0.1, (depthFactor + 1) / 2));
 
     if (glassMatRef.current) glassMatRef.current.opacity = THREE.MathUtils.damp(glassMatRef.current.opacity, targetOpacity, 5, dt);
     if (texMatRef.current) {
@@ -195,9 +195,10 @@ function CertificateMesh({ index, continuousIndex, total }: { index: number, con
   );
 }
 
-function Pedestal() {
+function Pedestal({ isMobile }: { isMobile?: boolean }) {
+  const scale = isMobile ? 0.6 : 1;
   return (
-    <group position={[0, -1.75, 0]}>
+    <group position={[0, -1.75, 0]} scale={scale}>
 
       {/* 
         LAYER 1 (Bottom Base) 
@@ -256,7 +257,7 @@ function Pedestal() {
 }
 
 /* Frame camera to the visible front area only (not the back of the carousel ring) */
-function CameraFit() {
+function CameraFit({ isMobile }: { isMobile?: boolean }) {
   const { camera, size } = useThree();
   const initializedRef = useRef(false);
 
@@ -269,9 +270,9 @@ function CameraFit() {
     // Front certificate: y = [-1.6, 1.6] (height 3.2), at z ≈ 0
     // Pedestal bottom:   y ≈ -2.75
     // Side certificates: x ≈ ±5.4 (scaled down)
-    const visibleHeight = 5.2;  // expanded to fully include platform base + rings
-    const visibleWidth = 8.5;   // tighter horizontal frame
-    const centerY = -0.7;       // shifted further down to push scene upward on screen
+    const visibleHeight = isMobile ? 4.8 : 5.2;  // expanded to fully include platform base + rings
+    const visibleWidth = isMobile ? 4.6 : 8.5;   // tighter horizontal frame
+    const centerY = isMobile ? -1.6 : -0.7;       // shifted further down to push scene upward on screen
 
     // Compute camera Z so the taller constraint (height or width) fits exactly
     const fitByHeight = (visibleHeight / 2) / Math.tan(fov / 2);
@@ -299,6 +300,8 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
   const carouselGroupRef = useRef<THREE.Group>(null);
   const _reserved = useRef(null); // Preserve hook order for HMR stability
   const sliceAngle = (Math.PI * 2) / total;
+  const { size } = useThree();
+  const isMobile = size.width < 768;
 
   useFrame((_, delta) => {
     if (!carouselGroupRef.current) return;
@@ -316,7 +319,7 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
 
   return (
     <>
-      <CameraFit />
+      <CameraFit isMobile={isMobile} />
 
       <ambientLight intensity={0.5} color="#ffffff" />
       {/* Soft main key light for overall illumination */}
@@ -324,12 +327,12 @@ function ThreeCarousel({ continuousIndex, total }: { continuousIndex: number, to
 
       <Environment preset="night" />
 
-      <Pedestal />
+      <Pedestal isMobile={isMobile} />
 
       <group position={[0, 0, -4.5]}>
         <group ref={carouselGroupRef}>
           {certificates.map((_, i) => (
-            <CertificateMesh key={i} index={i} continuousIndex={continuousIndex} total={total} />
+            <CertificateMesh key={i} index={i} continuousIndex={continuousIndex} total={total} isMobile={isMobile} />
           ))}
         </group>
       </group>
@@ -375,7 +378,7 @@ export default function Certificates() {
   const activeCert = certificates[displayIndex];
 
   return (
-    <section id="certificates" className="relative py-24 md:pt-32 md:pb-40 overflow-hidden bg-background">
+    <section id="certificates" className="relative pt-12 pb-24 md:pt-32 md:pb-40 overflow-hidden bg-background">
       <motion.div 
         className="max-w-[1440px] mx-auto px-5 md:px-10 lg:px-20 relative z-10"
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
@@ -384,7 +387,7 @@ export default function Certificates() {
         transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
       >
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-4 md:mb-8">
           <span className="text-primary font-mono text-sm tracking-widest mb-4 block">06</span>
           <h2 className="font-heading text-3xl md:text-5xl font-bold text-white uppercase tracking-wider mb-4">
             CERTIFICATIONS
@@ -394,7 +397,7 @@ export default function Certificates() {
           </p>
         </div>
 
-        <div ref={canvasContainerRef} className="relative w-full h-[78vh] min-h-[650px] max-h-[1000px] flex items-center justify-center">
+        <div ref={canvasContainerRef} className="relative w-full h-[60vh] md:h-[78vh] min-h-[400px] md:min-h-[650px] max-h-[700px] md:max-h-[1000px] flex items-center justify-center -mt-4 md:mt-0">
 
           <div
             className="absolute inset-0 z-20"
@@ -408,8 +411,8 @@ export default function Certificates() {
           </Canvas>
         </div>
 
-        <div className="relative z-30 flex flex-col items-center mt-6">
-          <div className="flex items-center gap-6 mb-8">
+        <div className="relative z-30 flex flex-col items-center mt-0 md:mt-6">
+          <div className="flex items-center gap-6 mb-4 md:mb-8">
             <button
               onClick={prev}
               className="flex w-10 h-10 rounded-full border border-white/20 bg-black/50 backdrop-blur-md items-center justify-center text-white hover:border-primary hover:text-primary hover:bg-black/80 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,229,255,0.4)] transition-all duration-300"
@@ -463,7 +466,7 @@ export default function Certificates() {
             <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2 max-w-2xl">
               {activeCert.title}
             </h3>
-            <p className="text-primary font-mono text-sm md:text-base mb-6">
+            <p className="text-primary font-mono text-sm md:text-base mb-4 md:mb-6">
               {activeCert.issuer} • {activeCert.date}
             </p>
             <a

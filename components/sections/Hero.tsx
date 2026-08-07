@@ -256,28 +256,28 @@ export default function Hero() {
         transition={{ duration: 1.2, delay: stagger.radar, ease: "easeOut" }}
       >
         {/* Ring 1 */}
-        <div className="absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] rounded-full border-[0.5px] border-primary/20 animate-[spin_40s_linear_infinite]" />
+        <div className="absolute w-[150px] h-[150px] md:w-[600px] md:h-[600px] rounded-full border-[0.5px] border-primary/20 animate-[spin_40s_linear_infinite]" />
         {/* Ring 2 */}
-        <div className="absolute w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full border-[0.5px] border-primary/10 animate-[spin_60s_linear_infinite_reverse]">
+        <div className="absolute w-[220px] h-[220px] md:w-[800px] md:h-[800px] rounded-full border-[0.5px] border-primary/10 animate-[spin_60s_linear_infinite_reverse]">
           <div className="absolute top-0 left-1/2 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_10px_#00d9ff]" />
         </div>
         {/* Ring 3 */}
-        <div className="absolute w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] rounded-full border-[0.5px] border-primary/5 animate-[spin_80s_linear_infinite]" />
+        <div className="absolute w-[320px] h-[320px] md:w-[1000px] md:h-[1000px] rounded-full border-[0.5px] border-primary/5 animate-[spin_80s_linear_infinite]" />
 
         {/* Scanning Ring (Item #2) */}
         <div
-          className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full border border-primary/30 pointer-events-none"
+          className="absolute w-[120px] h-[120px] md:w-[500px] md:h-[500px] rounded-full border border-primary/30 pointer-events-none"
           style={{ animation: "scan-ring 4s ease-out infinite" }}
         />
       </motion.div>
 
       {/* ═══ HUGE BACKGROUND TEXT (Item #5) ═══ */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-10 flex flex-col items-center justify-center"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] md:w-full text-center pointer-events-none z-10 flex flex-col items-center justify-center opacity-[0.05] md:opacity-100"
         style={{ y: y1, opacity, willChange: "transform, opacity" }}
       >
         <motion.h1
-          className="font-hero text-[120px] sm:text-[180px] md:text-[220px] lg:text-[280px] leading-none tracking-tighter font-bold whitespace-nowrap select-none"
+          className="font-hero text-[35px] sm:text-[45px] md:text-[220px] lg:text-[280px] leading-none tracking-tighter font-bold whitespace-nowrap select-none"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 30%, rgba(0,217,255,0.3) 50%, rgba(255,255,255,0.6) 70%, rgba(255,255,255,0.9) 100%)",
             backgroundSize: "300% 100%",
@@ -304,7 +304,7 @@ export default function Hero() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1.5, delay: stagger.portrait, ease: "easeOut" }}
-          className="relative w-[310px] md:w-[450px] lg:w-[500px] h-[400px] md:h-[600px] lg:h-[700px]"
+          className="relative w-[230px] sm:w-[250px] md:w-[450px] lg:w-[500px] h-[290px] sm:h-[315px] md:h-[600px] lg:h-[700px]"
           style={{ animation: "float-portrait 8s ease-in-out infinite" }}
         >
           {/* Very subtle ambient glow — no visible ring */}
@@ -371,24 +371,24 @@ export default function Hero() {
       </motion.div>
 
       {/* ═══ UI OVERLAY LAYERS ═══ */}
-      <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-5 md:px-10 lg:px-16 flex flex-col md:flex-row justify-between items-end md:items-center z-30 pointer-events-none pt-[80px] pb-[40px]">
+      <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-5 md:px-10 lg:px-16 flex flex-col md:flex-row justify-between items-end md:items-center z-30 pointer-events-none pt-[100px] md:pt-[80px] pb-[60px] md:pb-[40px]">
 
         {/* ── LEFT COLUMN ── */}
-        <div className="relative flex flex-col h-full justify-between w-full md:w-1/3 pb-10 md:pb-12 pointer-events-auto items-start">
+        <div className="relative flex flex-col h-full justify-between w-full md:w-1/3 pb-16 md:pb-12 pointer-events-auto items-start">
 
           {/* Top Block: Pills & Heading */}
           <div>
             {/* Pills */}
             <motion.div
-              className="flex flex-wrap gap-2 mb-3"
+              className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 md:mb-3"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: stagger.socials }}
             >
               {["AI ENGINEER", "FULL STACK", "AI AUTOMATION"].map((skill) => (
-                <div key={skill} className="group flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md hover:border-primary/50 hover:bg-primary/10 hover:shadow-[0_0_15px_rgba(0,217,255,0.2)] transition-all duration-300 cursor-default" data-magnetic="true">
+                <div key={skill} className="group flex items-center gap-2 px-4 py-1.5 md:px-3 md:py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md hover:border-primary/50 hover:bg-primary/10 hover:shadow-[0_0_15px_rgba(0,217,255,0.2)] transition-all duration-300 cursor-default" data-magnetic="true">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary group-hover:animate-pulse shadow-[0_0_5px_#00d9ff]" />
-                  <span className="text-[8px] md:text-[9px] uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">{skill}</span>
+                  <span className="text-[7px] md:text-[9px] uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">{skill}</span>
                 </div>
               ))}
             </motion.div>
@@ -442,21 +442,21 @@ export default function Hero() {
 
           {/* ── Bottom Left: Profile Info (Items #11, #12, #15) ── */}
           <motion.div
-            className="mb-0"
+            className="mb-2 md:mb-0"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: stagger.description }}
           >
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 md:mb-2">
               <span className="w-2 h-2 rounded-full bg-transparent border-[2px] border-primary flex items-center justify-center p-[2px]">
                 <span className="w-full h-full bg-primary rounded-full" />
               </span>
               <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-white font-semibold">HELLO, I&apos;M</span>
             </div>
-            <h3 className="font-sans text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 tracking-tight">Santhosh CV</h3>
+            <h3 className="font-sans text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-1 tracking-tight">Santhosh CV</h3>
 
             {/* Rotating Subtitle (Item #15) */}
-            <div className="h-6 md:h-7 relative overflow-hidden mb-4">
+            <div className="h-6 md:h-7 relative overflow-hidden mb-3 md:mb-4">
               <AnimatePresence mode="wait">
                 <motion.p
                   key={currentSubtitle}
@@ -471,7 +471,7 @@ export default function Hero() {
               </AnimatePresence>
             </div>
 
-            <p className="text-secondary-foreground text-[10px] md:text-xs leading-relaxed max-w-[260px] md:max-w-[300px] mb-6 font-sans">
+            <p className="text-secondary-foreground text-[10.5px] md:text-xs leading-relaxed max-w-[220px] sm:max-w-[260px] md:max-w-[300px] mb-6 md:mb-6 font-sans">
               Building intelligent AI applications, scalable software, and modern digital experiences focused on performance and real-world impact.
             </p>
 
@@ -622,7 +622,7 @@ export default function Hero() {
       </motion.div>
 
       {/* ═══ SECTION DIVIDER (Item #22) ═══ */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-30 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-64 md:h-32 bg-gradient-to-t from-background via-background/90 md:via-background/80 to-transparent z-30 pointer-events-none" />
     </section>
   );
 }

@@ -529,15 +529,15 @@ export default function Education() {
               <h2 className="font-heading text-3xl md:text-5xl font-bold text-white uppercase tracking-wider mb-6">
                 MY <span className="text-primary">EDUCATION</span>
               </h2>
-              <p className="text-secondary-foreground text-lg leading-relaxed font-sans max-w-lg">
+              <p className="text-secondary-foreground text-[16px] md:text-lg leading-relaxed font-sans max-w-lg">
                 My academic journey has equipped me with a strong foundation in computer science, problem-solving, and real-world application development.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               {/* Card 1: CGPA */}
               <motion.div 
-                className="glass p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
+                className="glass p-8 md:p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
@@ -546,14 +546,14 @@ export default function Education() {
                 <GraduationCap size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
                 <div>
                   <div className="text-3xl font-hero text-white tracking-wider">7.5</div>
-                  <div className="text-sm font-heading text-white">CGPA</div>
-                  <div className="text-xs text-secondary-foreground">Overall</div>
+                  <div className="text-[15px] md:text-sm font-heading text-white">CGPA</div>
+                  <div className="text-[14px] md:text-xs text-secondary-foreground">Overall</div>
                 </div>
               </motion.div>
 
               {/* Card 2: Graduation */}
               <motion.div 
-                className="glass p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
+                className="glass p-8 md:p-6 rounded-2xl flex flex-col gap-3 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300"
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
@@ -562,14 +562,14 @@ export default function Education() {
                 <BookOpen size={24} className="text-primary group-hover:scale-110 transition-transform duration-300" />
                 <div>
                   <div className="text-3xl font-hero text-white tracking-wider">2026</div>
-                  <div className="text-sm font-heading text-white">Graduation</div>
-                  <div className="text-xs text-secondary-foreground">Year</div>
+                  <div className="text-[15px] md:text-sm font-heading text-white">Graduation</div>
+                  <div className="text-[14px] md:text-xs text-secondary-foreground">Year</div>
                 </div>
               </motion.div>
 
-              {/* Card 3: Education Levels */}
+              {/* Card 3: Education Levels (Desktop Only) */}
               <motion.div 
-                className="glass p-6 rounded-2xl flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
+                className="glass p-6 rounded-2xl hidden md:flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
@@ -598,9 +598,9 @@ export default function Education() {
                 </div>
               </motion.div>
 
-              {/* Card 4: Academic Journey */}
+              {/* Card 4: Academic Journey (Desktop Only) */}
               <motion.div 
-                className="glass p-6 rounded-2xl flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
+                className="glass p-6 rounded-2xl hidden md:flex flex-col gap-4 group border border-white/5 hover:border-[#00E5FF]/50 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,229,255,0.15)] transition-all duration-300 min-h-[240px]"
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
@@ -634,6 +634,66 @@ export default function Education() {
                       <span>Sringeri</span> 
                       <span className="text-primary font-mono bg-primary/10 px-1.5 py-0.5 rounded">2019–2020</span>
                     </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Mobile Merged Timeline Card (Item #11) */}
+              <motion.div 
+                className="glass p-8 md:hidden rounded-2xl flex flex-col gap-6 border border-white/5"
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1, delay: 0.2 }}
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <Award size={26} className="text-primary" />
+                  <div className="text-[16px] font-heading text-white">Academic Journey</div>
+                </div>
+                
+                {/* Timeline Item 1 */}
+                <div className="flex flex-col gap-2">
+                  <div className="text-[15px] font-medium text-white flex items-center gap-2 leading-snug">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    B.E. Computer Science & Design
+                  </div>
+                  <div className="text-[14px] text-secondary-foreground pl-3.5">
+                    Canara Engineering College, Mangalore
+                  </div>
+                  <div className="pl-3.5 mt-1">
+                    <span className="text-primary font-mono bg-primary/10 px-2.5 py-1 rounded text-xs inline-block">2022–2026</span>
+                  </div>
+                </div>
+                
+                <div className="h-px w-full bg-white/5 my-1" />
+
+                {/* Timeline Item 2 */}
+                <div className="flex flex-col gap-2">
+                  <div className="text-[15px] font-medium text-white flex items-center gap-2 leading-snug">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    Pre-University Education
+                  </div>
+                  <div className="text-[14px] text-secondary-foreground pl-3.5">
+                    JCBM PU College, Sringeri
+                  </div>
+                  <div className="pl-3.5 mt-1">
+                    <span className="text-primary font-mono bg-primary/10 px-2.5 py-1 rounded text-xs inline-block">2020–2022</span>
+                  </div>
+                </div>
+
+                <div className="h-px w-full bg-white/5 my-1" />
+
+                {/* Timeline Item 3 */}
+                <div className="flex flex-col gap-2">
+                  <div className="text-[15px] font-medium text-white flex items-center gap-2 leading-snug">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    Secondary Education
+                  </div>
+                  <div className="text-[14px] text-secondary-foreground pl-3.5">
+                    Jaycees High School, Sringeri
+                  </div>
+                  <div className="pl-3.5 mt-1">
+                    <span className="text-primary font-mono bg-primary/10 px-2.5 py-1 rounded text-xs inline-block">2019–2020</span>
                   </div>
                 </div>
               </motion.div>

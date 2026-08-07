@@ -271,7 +271,7 @@ export default function AllProjects() {
                 className="group-hover:-translate-x-0.5 transition-transform duration-300"
               />
             </span>
-            <span className="font-medium tracking-wide">Back to Home</span>
+            <span className="font-medium tracking-wide">Back to Portfolio</span>
           </Link>
         </motion.div>
 
@@ -374,7 +374,7 @@ export default function AllProjects() {
               className="relative z-10 text-white/40 group-hover:text-primary group-hover:-translate-x-1 transition-all duration-300"
             />
             <span className="relative z-10 text-sm font-semibold text-white/80 group-hover:text-white tracking-wide transition-colors duration-300 font-button">
-              Back to Home
+              Back to Portfolio
             </span>
           </Link>
         </motion.div>

@@ -18,7 +18,7 @@ export default function Home() {
       <LazySection><TechStack /></LazySection>
       <LazySection><Experience /></LazySection>
       <LazySection><Education /></LazySection>
-      <LazySection><Projects /></LazySection>
+      <LazySection id="projects"><Projects /></LazySection>
       <LazySection><Certificates /></LazySection>
       <LazySection><Contact /></LazySection>
     </>

@@ -282,7 +282,6 @@ export default function Projects() {
 
   return (
     <section
-      id="projects"
       ref={containerRef}
       className="relative py-32 md:py-40 overflow-hidden bg-background"
     >

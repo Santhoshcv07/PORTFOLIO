@@ -6,9 +6,10 @@ interface LazySectionProps {
   children: React.ReactNode;
   rootMargin?: string;
   fallback?: React.ReactNode;
+  id?: string;
 }
 
-export default function LazySection({ children, rootMargin = "500px", fallback = null }: LazySectionProps) {
+export default function LazySection({ children, rootMargin = "500px", fallback = null, id }: LazySectionProps) {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -36,7 +37,7 @@ export default function LazySection({ children, rootMargin = "500px", fallback =
   }, [rootMargin]);
 
   return (
-    <div ref={ref} className="min-h-[10vh]">
+    <div ref={ref} id={id} className="min-h-[10vh]">
       {isIntersecting ? children : fallback}
     </div>
   );
