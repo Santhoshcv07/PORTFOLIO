@@ -12,42 +12,42 @@ const certificates = [
     title: "Google AI Essentials",
     issuer: "Google",
     date: "May 18, 2025",
-    image: "/certificates/google.png",
+    image: "/certificates/google.webp",
     link: "https://coursera.org/verify/ZKGE1CXFE4WF"
   },
   {
     title: "Introduction to MongoDB (For Students)",
     issuer: "MongoDB",
     date: "May 18, 2025",
-    image: "/certificates/mongodb.png",
+    image: "/certificates/mongodb.webp",
     link: "https://drive.google.com/file/d/19SYPlFwZx0fALQMDReSV3pNlyN6JeNWr/view?usp=sharing"
   },
   {
     title: "Git Training",
     issuer: "Spoken Tutorial, IIT Bombay",
     date: "26 April 2025",
-    image: "/certificates/git.png",
+    image: "/certificates/git.webp",
     link: "https://drive.google.com/file/d/116I18b1abCFHkz_ITQlL_ALXFmugMY-J/view?usp=sharing"
   },
   {
     title: "AI for Students: Build Your Own Generative AI Model",
     issuer: "NxtWave",
     date: "June 15, 2025",
-    image: "/certificates/ai-model.png",
+    image: "/certificates/ai-model.webp",
     link: "https://drive.google.com/file/d/1kqqA74k6kP-3cPXRRmwv-U7iGePZ0TwJ/view?usp=sharing"
   },
   {
     title: "Introduction to SQL",
     issuer: "Simplilearn",
     date: "3rd September 2025",
-    image: "/certificates/sql.png",
+    image: "/certificates/sql.webp",
     link: "https://drive.google.com/file/d/1nAjQxm8Yh3PS6UGQxPEapu19sr1DTx4M/view?usp=sharing"
   },
   {
     title: "No-code Machine Learning and Generative AI on AWS",
     issuer: "AWS Training & Certification",
     date: "April 15, 2026",
-    image: "/certificates/AWS.png",
+    image: "/certificates/AWS.webp",
     link: "https://drive.google.com/file/d/1fPQbG948qvS2srMBoThuHhrNp_M-pMMI/view?usp=sharing"
   }
 ];
